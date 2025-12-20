@@ -10,8 +10,10 @@ import com.uoh.model.dto.bookBorrow.BookBorrowAddRequest;
 import com.uoh.model.dto.bookBorrow.BookBorrowQueryRequest;
 import com.uoh.model.dto.bookBorrow.BookBorrowUpdateRequest;
 import com.uoh.model.entity.BookBorrow;
+import com.uoh.model.entity.User;
 import com.uoh.model.vo.BookBorrowVO;
 import com.uoh.service.BookBorrowService;
+import com.uoh.service.UserService;
 import com.uoh.utils.UserHolder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,6 +24,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Date;
 
 /**
  * 借阅接口
@@ -35,6 +39,9 @@ public class BookBorrowController {
 
     @Resource
     private BookBorrowService bookBorrowService;
+
+    @Resource
+    private UserService userService;
     
 
     // region 增删改查
@@ -50,11 +57,11 @@ public class BookBorrowController {
     public BaseResponse<Long> addBookBorrow(@RequestBody BookBorrowAddRequest request) {
         // 获取当前登录用户 id
         Long userId = UserHolder.getUserId();
-
-        // 调用 Service 完成业务
+        User user = userService.getById(userId);
+        if(user==null){
+            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR,"没有登录或者token已过期、请重新登录");
+        }
         Long borrowId = bookBorrowService.borrowBook(request, userId);
-
-        // 返回结果
         return ResultUtils.success(borrowId);
     }
 
@@ -72,7 +79,6 @@ public class BookBorrowController {
         if (bookBorrowUpdateRequest == null || bookBorrowUpdateRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        // todo 在此处将实体类和 DTO 进行转换
         BookBorrow bookBorrow = new BookBorrow();
         BeanUtils.copyProperties(bookBorrowUpdateRequest, bookBorrow);
         // 数据校验
@@ -81,6 +87,7 @@ public class BookBorrowController {
         long id = bookBorrowUpdateRequest.getId();
         BookBorrow oldBookBorrow = bookBorrowService.getById(id);
         ThrowUtils.throwIf(oldBookBorrow == null, ErrorCode.NOT_FOUND_ERROR);
+        bookBorrow.setUpdateTime(new Date());
         // 操作数据库
         boolean result = bookBorrowService.updateById(bookBorrow);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
@@ -130,6 +137,5 @@ public class BookBorrowController {
         return ResultUtils.success(bookBorrowService.getBookBorrowVOPage(bookBorrowPage));
     }
     // endregion
-
 
 }

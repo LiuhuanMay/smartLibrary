@@ -19,6 +19,7 @@ import com.uoh.service.UserService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -66,8 +67,13 @@ public class BookBorrowServiceImpl extends ServiceImpl<BookBorrowMapper, BookBor
         if (bookBorrowQueryRequest == null) {
             return queryWrapper;
         }
+        Long userId = bookBorrowQueryRequest.getUserId();
         if(!(bookBorrowQueryRequest.getUserId() ==null)){
-            queryWrapper.eq("user_id",bookBorrowQueryRequest.getUserId());
+            queryWrapper.eq("user_id",userId);
+        }
+        Integer status = bookBorrowQueryRequest.getStatus();
+        if(bookBorrowQueryRequest.getStatus()==null){
+            queryWrapper.eq("status",status);
         }
         return queryWrapper;
     }
@@ -136,6 +142,7 @@ public class BookBorrowServiceImpl extends ServiceImpl<BookBorrowMapper, BookBor
     }
 
     @Override
+    @Transactional
     public Long borrowBook(BookBorrowAddRequest request, Long userId) {
         // 1. 参数校验
         ThrowUtils.throwIf(request == null, ErrorCode.PARAMS_ERROR);
@@ -168,8 +175,12 @@ public class BookBorrowServiceImpl extends ServiceImpl<BookBorrowMapper, BookBor
         ThrowUtils.throwIf(!saved, ErrorCode.OPERATION_ERROR);
 
         // 7. 更新图书库存
+        //可用库存-1
         book.setAvailableStock(book.getAvailableStock() - 1);
-        book.setBorrowCount(book.getBorrowCount() + 1);
+        //已经借出去的数量+1
+        book.setBorrowedCount(book.getBorrowedCount() + 1);
+        //累计借出去的数量+1
+        book.setTotalBorrowedCount(book.getTotalBorrowedCount()+1);
         bookService.updateById(book);
 
         // 8. 返回借阅记录 id

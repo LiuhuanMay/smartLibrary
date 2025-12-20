@@ -53,10 +53,6 @@ public class BookAddRequest implements Serializable {
      */
     private Integer availableStock;
 
-    /**
-     * 累计借阅次数
-     */
-    private Integer borrowCount;
 
     /**
      * 图书状态：0下架 1上架

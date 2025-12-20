@@ -16,7 +16,9 @@ import com.uoh.service.BookService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -52,12 +54,58 @@ public class BookServiceImpl extends ServiceImpl<BookMapper, Book> implements Bo
      */
     @Override
     public QueryWrapper<Book> getQueryWrapper(BookQueryRequest bookQueryRequest) {
+
         QueryWrapper<Book> queryWrapper = new QueryWrapper<>();
+
         if (bookQueryRequest == null) {
             return queryWrapper;
         }
+
+        // 图书名称
+        if (bookQueryRequest.getBookName() != null
+                && !bookQueryRequest.getBookName().trim().isEmpty()) {
+            queryWrapper.like("book_name", bookQueryRequest.getBookName());
+        }
+
+        // 作者
+        if (bookQueryRequest.getAuthor() != null
+                && !bookQueryRequest.getAuthor().trim().isEmpty()) {
+            queryWrapper.like("author", bookQueryRequest.getAuthor());
+        }
+
+        // 出版社
+        if (bookQueryRequest.getPublisher() != null
+                && !bookQueryRequest.getPublisher().trim().isEmpty()) {
+            queryWrapper.like("publisher", bookQueryRequest.getPublisher());
+        }
+
+        // 是否可借
+        if (bookQueryRequest.getAvailableStock() != null) {
+            if (bookQueryRequest.getAvailableStock() == 1) {
+                queryWrapper.gt("available_stock", 0);
+            } else {
+                queryWrapper.eq("available_stock", 0);
+            }
+        }
+
+        // 出版日期：之前 / 之后
+        if (bookQueryRequest.getPublishDate() != null
+                && bookQueryRequest.getPublishDateType() != null) {
+
+            if (bookQueryRequest.getPublishDateType() == 0) {
+                // 之前
+                queryWrapper.lt("publish_date", bookQueryRequest.getPublishDate());
+            } else {
+                // 之后
+                queryWrapper.gt("publish_date", bookQueryRequest.getPublishDate());
+            }
+        }
+
         return queryWrapper;
     }
+
+
+
 
     /**
      * 获取图书管理封装
@@ -95,41 +143,44 @@ public class BookServiceImpl extends ServiceImpl<BookMapper, Book> implements Bo
     }
 
     @Override
-    public void updateBook(Book oldBook, BookUpdateRequest bookUpdateRequest) {
+    @Transactional
+    public void updateBook(Book oldBook, BookUpdateRequest request) {
 
-        Integer newTotalStock = bookUpdateRequest.getTotalStock();
+        Integer newTotalStock = request.getTotalStock();
         Integer oldTotalStock = oldBook.getTotalStock();
 
         Book book = new Book();
-        BeanUtils.copyProperties(bookUpdateRequest, book);
+        BeanUtils.copyProperties(request, book);
+        book.setId(oldBook.getId());
 
-        // 用户没有传库存 or 库存未变化，直接更新其他字段
+        // 库存未传 或 库存未变化
         if (newTotalStock == null || newTotalStock.equals(oldTotalStock)) {
-            // 保留原可借库存
-            book.setAvailableStock(oldBook.getAvailableStock());
+            book.setUpdateTime(new Date());
             this.updateById(book);
             return;
         }
 
-        // 当“库存发生变化”时才执行
+        // 库存校验
         if (newTotalStock < 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "库存总额不能为负数");
         }
 
-        Integer borrowCount = oldBook.getBorrowCount();
-
-        if (newTotalStock < borrowCount) {
+        Integer borrowedCount = oldBook.getBorrowedCount();
+        if (newTotalStock < borrowedCount) {
             throw new BusinessException(
                     ErrorCode.PARAMS_ERROR,
-                    String.format("库存总额不能小于已借出数量（已借出：%d）", borrowCount)
+                    String.format("库存总额不能小于已借出数量（已借出：%d）", borrowedCount)
             );
         }
 
-        // 核心公式（安全 & 高性能）
-        int newAvailableStock = newTotalStock - borrowCount;
-        book.setAvailableStock(newAvailableStock);
+        // 重新计算可用库存
+        book.setTotalStock(newTotalStock);
+        book.setAvailableStock(newTotalStock - borrowedCount);
+        book.setUpdateTime(new Date());
+
         this.updateById(book);
     }
+
 
 
 

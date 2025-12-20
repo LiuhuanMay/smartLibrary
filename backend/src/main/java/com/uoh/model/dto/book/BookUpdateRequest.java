@@ -1,5 +1,7 @@
 package com.uoh.model.dto.book;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -14,62 +16,44 @@ import java.util.Date;
 public class BookUpdateRequest implements Serializable {
 
     /**
-     * 主键id
+     * 借阅记录ID
      */
-    private long id;
+    private Long id;
 
     /**
-     * 图书名称
+     * 用户ID
      */
-    private String bookName;
+    private Long userId;
 
     /**
-     * 图书封面URL
+     * 图书ID
      */
-    private String cover;
+    private Long bookId;
 
     /**
-     * 作者
+     * 借阅时间
      */
-    private String author;
+    private Date borrowTime;
 
     /**
-     * 出版社
+     * 应还时间
      */
-    private String publisher;
+    private Date dueTime;
 
     /**
-     * 出版日期
+     * 实际归还时间
      */
-    private Date publishDate;
+    private Date returnTime;
 
     /**
-     * ISBN（可为空，但唯一）
+     * 借阅状态：0借阅中 1已归还 2逾期
      */
-    private String isbn;
+    private Integer status;
 
     /**
-     * 总库存
+     * 逾期天数
      */
-    private Integer totalStock;
-
-
-    /**
-     * 图书状态：0下架 1上架
-     */
-    private Integer status = 0;
-
-    /**
-     * 价格
-     */
-    private BigDecimal price;
-
-    /**
-     * 语言
-     */
-    private String language;
-
-
+    private Integer overdueDays;
 
     private static final long serialVersionUID = 1L;
 }

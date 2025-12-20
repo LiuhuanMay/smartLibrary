@@ -47,16 +47,10 @@ public class BookBorrowUpdateRequest implements Serializable {
      */
     private Integer status;
 
-
     /**
      * 逾期天数
      */
     private Integer overdueDays;
-
-    /**
-     * 创建时间
-     */
-    private Date createTime;
 
     /**
      * 更新时间

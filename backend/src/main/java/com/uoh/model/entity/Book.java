@@ -28,6 +28,12 @@ public class Book implements Serializable {
      */
     private String bookName;
 
+
+    /**
+     *图书介绍
+     */
+    private String bookIntroduction;
+
     /**
      * 图书封面URL
      */
@@ -64,9 +70,14 @@ public class Book implements Serializable {
     private Integer availableStock;
 
     /**
-     * 累计借阅次数
+     * 已经借出去的数量
      */
-    private Integer borrowCount;
+    private Integer borrowedCount;
+
+    /**
+     *累计借阅次数
+     */
+    private Integer totalBorrowedCount;
 
     /**
      * 图书状态：0下架 1上架

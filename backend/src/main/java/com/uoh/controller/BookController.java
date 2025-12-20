@@ -133,7 +133,7 @@ public class BookController {
      * @return
      */
     @PostMapping("/list/page/vo")
-    @Operation(summary = "分页获取图书")
+    @Operation(summary = "分页获取图书(普通用户)")
     public BaseResponse<Page<BookVO>> listBookVOByPage(@RequestBody BookQueryRequest bookQueryRequest) {
         long current = bookQueryRequest.getCurrentPage();
         long size = bookQueryRequest.getPageSize();
@@ -144,6 +144,27 @@ public class BookController {
                 bookService.getQueryWrapper(bookQueryRequest));
         // 获取封装类
         return ResultUtils.success(bookService.getBookVOPage(bookPage));
+    }
+
+
+    /**
+     * 分页获取图书管理列表
+     *
+     * @param bookQueryRequest
+     * @return
+     */
+    @PostMapping("/list/page")
+    @Operation(summary = "分页获取图书(管理员)")
+    public BaseResponse<Page<Book>> listBook(@RequestBody BookQueryRequest bookQueryRequest){
+        long current = bookQueryRequest.getCurrentPage();
+        long size = bookQueryRequest.getPageSize();
+        // 限制爬虫
+        ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
+        // 查询数据库
+        Page<Book> bookPage = bookService.page(new Page<>(current, size),
+                bookService.getQueryWrapper(bookQueryRequest));
+        // 获取封装类
+        return ResultUtils.success(bookPage);
     }
 
     // endregion

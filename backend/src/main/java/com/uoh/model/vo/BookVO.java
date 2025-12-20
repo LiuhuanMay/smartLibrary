@@ -26,6 +26,11 @@ public class BookVO implements Serializable {
     private String bookName;
 
     /**
+     * 图书介绍
+     */
+    private String bookIntroduction;
+
+    /**
      * 图书封面URL
      */
     private String cover;
@@ -41,19 +46,10 @@ public class BookVO implements Serializable {
     private String publisher;
 
     /**
-     * 出版日期
-     */
-    private Date publishDate;
-
-    /**
-     * ISBN（可为空，但唯一）
-     */
-    private String isbn;
-
-    /**
      * 总库存
      */
     private Integer totalStock;
+
 
     /**
      * 可借库存
@@ -61,14 +57,14 @@ public class BookVO implements Serializable {
     private Integer availableStock;
 
     /**
-     * 累计借阅次数
+     * 已借出数量
      */
-    private Integer borrowCount;
+    private Integer borrowedCount;
 
     /**
-     * 图书状态：0下架 1上架
+     * 累计借阅次数
      */
-    private Integer status;
+    private Integer totalBorrowedCount;
 
     /**
      * 价格
@@ -80,19 +76,8 @@ public class BookVO implements Serializable {
      */
     private String language;
 
-    /**
-     * 创建时间
-     */
-    private Date createTime;
-
-    /**
-     * 更新时间
-     */
-    private Date updateTime;
-
 
     private static final long serialVersionUID = 1L;
-
 
     /**
      * 封装类转对象

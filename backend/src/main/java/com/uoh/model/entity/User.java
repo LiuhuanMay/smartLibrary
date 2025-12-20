@@ -22,6 +22,7 @@ public class User implements Serializable {
     @TableId(type = IdType.ASSIGN_ID)
     private Long id;
 
+
     /**
      * 手机号（登录账号）
      */
