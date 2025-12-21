@@ -9,6 +9,7 @@ import com.uoh.exception.ThrowUtils;
 import com.uoh.model.dto.bookBorrow.BookBorrowAddRequest;
 import com.uoh.model.dto.bookBorrow.BookBorrowQueryRequest;
 import com.uoh.model.dto.bookBorrow.BookBorrowUpdateRequest;
+import com.uoh.model.dto.bookBorrow.BookReturnRequest;
 import com.uoh.model.entity.BookBorrow;
 import com.uoh.model.entity.User;
 import com.uoh.model.vo.BookBorrowVO;
@@ -42,6 +43,8 @@ public class BookBorrowController {
 
     @Resource
     private UserService userService;
+
+
     
 
     // region 增删改查
@@ -64,6 +67,7 @@ public class BookBorrowController {
         Long borrowId = bookBorrowService.borrowBook(request, userId);
         return ResultUtils.success(borrowId);
     }
+
 
 
 
@@ -103,8 +107,7 @@ public class BookBorrowController {
      */
     @PostMapping("/myList/page/vo")
     @Operation(summary = "分页获取当前用户的借阅列表")
-    public BaseResponse<Page<BookBorrowVO>> myListBookBorrowVOByPage(@RequestBody BookBorrowQueryRequest bookBorrowQueryRequest) {
-        Long userId = UserHolder.getUserId();
+    public BaseResponse<Page<BookBorrowVO>> myListBookBorrowVOByPage(@RequestBody BookBorrowQueryRequest bookBorrowQueryRequest) {Long userId = UserHolder.getUserId();
         bookBorrowQueryRequest.setUserId(userId);
         long current = bookBorrowQueryRequest.getCurrentPage();
         long size = bookBorrowQueryRequest.getPageSize();
@@ -113,6 +116,7 @@ public class BookBorrowController {
         // 查询数据库
         Page<BookBorrow> bookBorrowPage = bookBorrowService.page(new Page<>(current, size),
                 bookBorrowService.getQueryWrapper(bookBorrowQueryRequest));
+        log.info(bookBorrowPage.getRecords().toString());
         // 获取封装类
         return ResultUtils.success(bookBorrowService.getBookBorrowVOPage(bookBorrowPage));
     }
@@ -138,4 +142,17 @@ public class BookBorrowController {
     }
     // endregion
 
+
+    /**
+     * 归还图书
+     *
+     * @param bookReturnRequest
+     * @return
+     */
+    @PostMapping("/returnBook")
+    @Operation(summary = "归还图书")
+    public BaseResponse<String> bookReturn(@RequestBody BookReturnRequest bookReturnRequest){
+        bookBorrowService.bookReturn(bookReturnRequest);
+        return ResultUtils.success("图书归还成功");
+    }
 }

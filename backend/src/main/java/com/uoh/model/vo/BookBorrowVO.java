@@ -19,6 +19,7 @@ public class BookBorrowVO implements Serializable {
      */
     private Long id;
 
+
     /**
      * 用户名称
      */
@@ -28,6 +29,7 @@ public class BookBorrowVO implements Serializable {
      * 图书名称
      */
     private String bookName;
+
 
     /**
      * 借阅时间

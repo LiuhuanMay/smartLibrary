@@ -5,10 +5,12 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.uoh.common.ErrorCode;
+import com.uoh.exception.BusinessException;
 import com.uoh.exception.ThrowUtils;
 import com.uoh.mapper.BookBorrowMapper;
 import com.uoh.model.dto.bookBorrow.BookBorrowAddRequest;
 import com.uoh.model.dto.bookBorrow.BookBorrowQueryRequest;
+import com.uoh.model.dto.bookBorrow.BookReturnRequest;
 import com.uoh.model.entity.Book;
 import com.uoh.model.entity.BookBorrow;
 import com.uoh.model.entity.User;
@@ -44,6 +46,7 @@ public class BookBorrowServiceImpl extends ServiceImpl<BookBorrowMapper, BookBor
     private UserService userService;
 
 
+
     /**
      * 校验数据
      *
@@ -72,7 +75,7 @@ public class BookBorrowServiceImpl extends ServiceImpl<BookBorrowMapper, BookBor
             queryWrapper.eq("user_id",userId);
         }
         Integer status = bookBorrowQueryRequest.getStatus();
-        if(bookBorrowQueryRequest.getStatus()==null){
+        if(!(bookBorrowQueryRequest.getStatus()==null)){
             queryWrapper.eq("status",status);
         }
         return queryWrapper;
@@ -185,6 +188,24 @@ public class BookBorrowServiceImpl extends ServiceImpl<BookBorrowMapper, BookBor
 
         // 8. 返回借阅记录 id
         return bookBorrow.getId();
+    }
+
+    @Override
+    @Transactional
+    public void bookReturn(BookReturnRequest bookReturnRequest) {
+        Long bookBorrowId = bookReturnRequest.getBookBorrowId();
+        BookBorrow bookBorrow = this.getById(bookBorrowId);
+        Long bookId = bookBorrow.getBookId();
+        Book book = bookService.getById(bookId);
+        if(book==null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"没有该图书");
+        }
+        //删除借阅记录
+        this.removeById(bookBorrowId);
+        //更新可用库存
+        book.setAvailableStock(book.getAvailableStock()+1);
+        book.setBorrowedCount(book.getBorrowedCount()-1);
+        bookService.updateById(book);
     }
 
 }
