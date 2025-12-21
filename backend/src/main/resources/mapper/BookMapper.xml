@@ -8,13 +8,15 @@
             <id property="id" column="id" jdbcType="BIGINT"/>
             <result property="bookName" column="book_name" jdbcType="VARCHAR"/>
             <result property="cover" column="cover" jdbcType="VARCHAR"/>
+            <result property="bookIntroduction" column="book_ introduction" jdbcType="VARCHAR"/>
             <result property="author" column="author" jdbcType="VARCHAR"/>
             <result property="publisher" column="publisher" jdbcType="VARCHAR"/>
             <result property="publishDate" column="publish_date" jdbcType="DATE"/>
             <result property="isbn" column="isbn" jdbcType="VARCHAR"/>
             <result property="totalStock" column="total_stock" jdbcType="INTEGER"/>
+            <result property="totalBorrowedCount" column="total_borrowed_count" jdbcType="INTEGER"/>
             <result property="availableStock" column="available_stock" jdbcType="INTEGER"/>
-            <result property="borrowCount" column="borrow_count" jdbcType="INTEGER"/>
+            <result property="borrowedCount" column="borrowed_count" jdbcType="INTEGER"/>
             <result property="status" column="status" jdbcType="TINYINT"/>
             <result property="price" column="price" jdbcType="DECIMAL"/>
             <result property="language" column="language" jdbcType="VARCHAR"/>

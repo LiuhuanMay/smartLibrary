@@ -18,6 +18,12 @@ public class BookAddRequest implements Serializable {
      */
     private String bookName;
 
+
+    /**
+     * 图书简介
+     */
+    private String bookIntroduction;
+
     /**
      * 图书封面URL
      */
@@ -48,16 +54,6 @@ public class BookAddRequest implements Serializable {
      */
     private Integer totalStock;
 
-    /**
-     * 可借库存
-     */
-    private Integer availableStock;
-
-
-    /**
-     * 图书状态：0下架 1上架
-     */
-    private Integer status = 0;
 
     /**
      * 价格

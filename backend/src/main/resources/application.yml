@@ -40,3 +40,6 @@ spring:
       host: localhost
       database: 0
       timeout: 5000ms
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

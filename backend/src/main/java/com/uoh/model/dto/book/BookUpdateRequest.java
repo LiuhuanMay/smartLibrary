@@ -16,44 +16,67 @@ import java.util.Date;
 public class BookUpdateRequest implements Serializable {
 
     /**
-     * 借阅记录ID
+     * 图书ID
      */
     private Long id;
 
     /**
-     * 用户ID
+     * 图书名称
      */
-    private Long userId;
+    private String bookName;
+
 
     /**
-     * 图书ID
+     *图书介绍
      */
-    private Long bookId;
+    private String bookIntroduction;
 
     /**
-     * 借阅时间
+     * 图书封面URL
      */
-    private Date borrowTime;
+    private String cover;
 
     /**
-     * 应还时间
+     * 作者
      */
-    private Date dueTime;
+    private String author;
 
     /**
-     * 实际归还时间
+     * 出版社
      */
-    private Date returnTime;
+    private String publisher;
 
     /**
-     * 借阅状态：0借阅中 1已归还 2逾期
+     * 出版日期
+     */
+    private Date publishDate;
+
+    /**
+     * ISBN（可为空，但唯一）
+     */
+    private String isbn;
+
+    /**
+     * 总库存
+     */
+    private Integer totalStock;
+
+
+    /**
+     * 图书状态：0下架 1上架
      */
     private Integer status;
 
     /**
-     * 逾期天数
+     * 价格
      */
-    private Integer overdueDays;
+    private BigDecimal price;
+
+    /**
+     * 语言
+     */
+    private String language;
+
 
     private static final long serialVersionUID = 1L;
 }
