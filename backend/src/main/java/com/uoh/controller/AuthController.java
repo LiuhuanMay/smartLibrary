@@ -56,14 +56,14 @@ public class AuthController {
         return ResultUtils.success(user);
     }
 
-    @PostMapping("/sendCode")
+    @GetMapping("/sendCode")
     @Operation(summary = "注册发送验证码")
     public BaseResponse<String> sendRegisterCode(@RequestParam ("email") String email) {
         emailManager.sendCode(email, EmailManager.CodeType.REGISTER);
         return ResultUtils.success("验证码已发送");
     }
 
-    @PostMapping("/sendResetCode")
+    @GetMapping("/sendResetCode")
     @Operation(summary = "忘记密码发送验证码")
     public BaseResponse<String> sendResetCode(@RequestParam ("email")String email) {
         User user = userService.getOne(Wrappers.<User>lambdaQuery().eq(User::getEmail, email));
@@ -74,7 +74,7 @@ public class AuthController {
         return ResultUtils.success("验证码已发送");
     }
 
-    @PostMapping
+    @PostMapping("/register")
     @Operation(summary = "用户注册")
     public BaseResponse<String> userRegister(@RequestBody UserRegisterRequest request){
         if (request.getPhone() == null || request.getPassword() == null
