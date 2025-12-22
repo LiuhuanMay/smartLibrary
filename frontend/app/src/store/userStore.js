@@ -2,10 +2,10 @@ import {ref} from "vue";
 import {defineStore} from "pinia";
 import {getCurrentUser} from "@/api/auth.js";
 
-export const useLoginUserStore = defineStore('user', () => {
-    const loginUser = ref({
-        userName: "未登录",
-    })
+export const userLoginUserStore = defineStore('user', () => {
+    const loginUser = ref(null)
+
+    const token = ref(localStorage.getItem('token') || null)
 
     function setLoginUser(newLoginUser) {
         loginUser.value = newLoginUser;
@@ -18,5 +18,5 @@ export const useLoginUserStore = defineStore('user', () => {
         }
     }
 
-    return {loginUser, setLoginUser, fetchLoginUser}
+    return {loginUser, token,fetchLoginUser}
 })

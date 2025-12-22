@@ -1,5 +1,7 @@
 package com.uoh.Interceptor;
 
+import com.uoh.common.ErrorCode;
+import com.uoh.exception.BusinessException;
 import com.uoh.utils.JWTUtils;
 import com.uoh.utils.UserHolder;
 import jakarta.annotation.Resource;
@@ -18,15 +20,34 @@ public class JwtInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
 
         String authHeader = request.getHeader("Authorization");
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String token = authHeader.substring(7);
-            Long userId = jwtUtils.getUserIdFromToken(token);
-            if (userId != null) {
-                UserHolder.setUserId(userId); // 放到 ThreadLocal
-            }
+
+        // 没有 token
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
         }
-        return true;
+
+        String token = authHeader.substring(7);
+
+        try {
+            // 校验 token
+            Long userId = jwtUtils.getUserIdFromToken(token);
+
+            if (userId == null) {
+                // token 无效或解析失败
+                throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+            }
+
+            // token 合法，放到 ThreadLocal
+            UserHolder.setUserId(userId);
+
+            return true; // 放行请求
+
+        } catch (Exception e) {
+            // token 解析异常（过期 / 篡改）
+            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+        }
     }
+
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {

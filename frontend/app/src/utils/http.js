@@ -1,4 +1,5 @@
 import axios from 'axios'
+import {userLoginUserStore} from "../store/userStore.js";
 
 const service = axios.create({
     baseURL: '/api',
@@ -7,25 +8,35 @@ const service = axios.create({
 })
 
 //请求拦截器
-service.interceptors.request.use((config) => {
+
+service.interceptors.request.use(config => {
+    const userStore = userLoginUserStore()
+    const token = userStore.token || localStorage.getItem('token')
+
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`
+    }
     return config
 })
 
-service.interceptors.request.use(
-    config => {
-        const token = localStorage.getItem('token')
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`
+
+//响应拦截器
+service.interceptors.response.use(
+
+    res => {
+       return res.data
+    } ,
+    err => {
+        const code = err.response?.data?.code;
+        if (code === 40100) {
+            // token 过期 / 无效 / 篡改 → 统一未登录
+            location.href = '/login';
         }
-        return config
-    },
+        return Promise.reject(err);
+    }
 )
 
 
-//响应拦截器
-service.interceptors.response.use((response) => {
-    return response.data
-})
 
 
 export const http = {

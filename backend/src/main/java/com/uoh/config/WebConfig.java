@@ -15,15 +15,15 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(jwtInterceptor);
-//                .addPathPatterns("/**") // 拦截所有请求
-//                .excludePathPatterns(
-//                        "/login",             // 登录接口
-//                        "/doc.html",          // Knife4j 文档页面
-//                        "/v3/api-docs/**",    // Swagger JSON
-//                        "/swagger-ui/**",     // Swagger UI
-//                        "/webjars/**"         // 静态资源
-//                );
+        registry.addInterceptor(jwtInterceptor)
+                .addPathPatterns("/**") // 拦截所有请求
+                .excludePathPatterns(
+                        "/auth/**",             // 登录接口
+                        "/doc.html",          // Knife4j 文档页面
+                        "/v3/api-docs/**",    // Swagger JSON
+                        "/swagger-ui/**",     // Swagger UI
+                        "/webjars/**"         // 静态资源
+                );
     }
 }
 
