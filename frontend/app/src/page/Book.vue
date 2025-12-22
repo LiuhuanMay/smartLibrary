@@ -56,7 +56,7 @@
         />
 
         <!-- 筛选弹窗 -->
-        <van-popup v-model:show="showFilter" position="right" :style="{ width: '85%', height: '100%' }">
+        <van-popup v-model:show="showFilter" position="bottom" round :style="{ width: '100%' }">
             <div class="filter-popup">
                 <van-form @submit="onFilterConfirm">
                     <van-cell-group inset>
@@ -72,14 +72,14 @@
                             placeholder="请输入出版社"
                             clearable
                         />
-                        <van-field label="是否可借">
-                            <template #input>
-                                <van-radio-group v-model="filterParams.availableStock" direction="horizontal">
-                                    <van-radio name="1">可借</van-radio>
-                                    <van-radio name="0">不可借</van-radio>
-                                </van-radio-group>
-                            </template>
-                        </van-field>
+                        <van-field
+                            v-model="availableStockText"
+                            is-link
+                            readonly
+                            label="是否可借"
+                            placeholder="请选择"
+                            @click="showAvailableStockPicker = true"
+                        />
 
                         <van-field
                             is-link
@@ -99,16 +99,14 @@
                         </van-field>
 
                         <!-- 每页条数 -->
-                        <van-field label="每页条数">
-                            <template #input>
-                                <van-radio-group v-model="queryParams.pageSize" direction="horizontal">
-                                    <van-radio :name="2">2</van-radio>
-                                    <van-radio :name="4">4</van-radio>
-                                    <van-radio :name="6">6</van-radio>
-                                    <van-radio :name="10">10</van-radio>
-                                </van-radio-group>
-                            </template>
-                        </van-field>
+                        <van-field
+                            v-model="pageSizeText"
+                            is-link
+                            readonly
+                            label="每页条数"
+                            placeholder="请选择"
+                            @click="showPageSizePicker = true"
+                        />
                     </van-cell-group>
 
                     <div class="form-buttons">
@@ -125,6 +123,22 @@
                 title="选择出版日期"
                 @confirm="onDateConfirm"
                 @cancel="showDatePicker = false"
+            />
+        </van-popup>
+
+        <van-popup v-model:show="showAvailableStockPicker" position="bottom">
+            <van-picker
+                :columns="availableStockOptions"
+                @confirm="onAvailableStockConfirm"
+                @cancel="showAvailableStockPicker = false"
+            />
+        </van-popup>
+
+        <van-popup v-model:show="showPageSizePicker" position="bottom">
+            <van-picker
+                :columns="pageSizeOptions"
+                @confirm="onPageSizeConfirm"
+                @cancel="showPageSizePicker = false"
             />
         </van-popup>
 
@@ -153,6 +167,10 @@ const loading = ref(false)
 // 弹窗状态
 const showFilter = ref(false)
 const showDatePicker = ref(false)
+const showAvailableStockPicker = ref(false)
+const showPageSizePicker = ref(false)
+const availableStockText = ref('')
+const pageSizeText = ref('')
 
 // 分页参数
 const queryParams = reactive({
@@ -174,6 +192,19 @@ const filterParams = reactive({
     publishDateType: '',
     availableStock: ''
 })
+
+const availableStockOptions = [
+    { text: '可借', value: '1' },
+    { text: '不可借', value: '0' }
+]
+
+const pageSizeOptions = [2, 4, 6, 10].map((value) => ({
+    text: `${value} 条/页`,
+    value
+}))
+
+pageSizeText.value =
+    pageSizeOptions.find((item) => item.value === queryParams.pageSize)?.text || ''
 
 // 获取数据
 const fetchList = async () => {
@@ -227,6 +258,24 @@ const onResetFilter = () => {
 const onDateConfirm = ({ selectedValues }) => {
     filterParams.publishDate = selectedValues.join('-')
     showDatePicker.value = false
+}
+
+const onAvailableStockConfirm = ({ selectedOptions }) => {
+    if (selectedOptions && selectedOptions[0]) {
+        filterParams.availableStock = selectedOptions[0].value
+        availableStockText.value = selectedOptions[0].text
+    }
+    showAvailableStockPicker.value = false
+}
+
+const onPageSizeConfirm = ({ selectedOptions }) => {
+    if (selectedOptions && selectedOptions[0]) {
+        queryParams.pageSize = selectedOptions[0].value
+        pageSizeText.value = selectedOptions[0].text
+        queryParams.currentPage = 1
+        fetchList()
+    }
+    showPageSizePicker.value = false
 }
 
 // 初始化加载
@@ -292,13 +341,9 @@ fetchList()
 }
 
 .filter-popup {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
     padding: 10px 0;
 
     .van-cell-group {
-        flex: 1;
         padding: 0 16px;
     }
 
