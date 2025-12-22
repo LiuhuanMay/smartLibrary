@@ -1,6 +1,6 @@
 <template>
     <div class="book-page-mobile">
-        <!-- 粘性布局的头部，包含搜索和筛选 -->
+        <!-- 顶部搜索 + 筛选 -->
         <van-sticky>
             <div class="header-bar">
                 <van-search
@@ -11,20 +11,14 @@
                     @clear="onSearch"
                 />
                 <div class="filter-trigger" @click="showFilter = true">
-                    <van-icon name="filter-o" size="20"/>
+                    <van-icon name="filter-o" size="20" />
                     <span>筛选</span>
                 </div>
             </div>
         </van-sticky>
 
         <!-- 图书列表 -->
-        <van-list
-            v-model:loading="loading"
-            :finished="finished"
-            finished-text="没有更多了"
-            @load="onLoad"
-            class="book-list"
-        >
+        <div class="book-list">
             <van-card
                 v-for="book in list"
                 :key="book.id"
@@ -38,7 +32,7 @@
                     <van-tag :type="book.availableStock > 0 ? 'success' : 'danger'">
                         {{ book.availableStock > 0 ? '可借阅' : '已借完' }}
                     </van-tag>
-                    <van-tag plain type="primary" style="margin-left: 5px;">
+                    <van-tag plain type="primary" style="margin-left: 5px">
                         剩余: {{ book.availableStock }}
                     </van-tag>
                 </template>
@@ -46,36 +40,39 @@
                     <span class="book-author">作者: {{ book.author || '佚名' }}</span>
                 </template>
             </van-card>
-        </van-list>
+        </div>
 
         <!-- 空状态 -->
-        <van-empty v-if="!loading && list.length === 0" description="暂无相关图书"/>
+        <van-empty v-if="!loading && list.length === 0" description="暂无相关图书" />
 
-        <!-- 筛选弹出层 -->
+        <!-- 底部分页（固定在 Tabbar 上方） -->
+        <van-pagination
+            mode="simple"
+            v-model="queryParams.currentPage"
+            :total-items="page.total"
+            :items-per-page="queryParams.pageSize"
+            @change="onPageChange"
+            class="pagination-bottom"
+        />
+
+        <!-- 筛选弹窗 -->
         <van-popup v-model:show="showFilter" position="right" :style="{ width: '85%', height: '100%' }">
             <div class="filter-popup">
-                <h3 class="filter-title">高级筛选</h3>
                 <van-form @submit="onFilterConfirm">
                     <van-cell-group inset>
                         <van-field
                             v-model="filterParams.author"
-                            name="author"
                             label="作者"
                             placeholder="请输入作者名"
                             clearable
                         />
                         <van-field
                             v-model="filterParams.publisher"
-                            name="publisher"
                             label="出版社"
                             placeholder="请输入出版社"
                             clearable
                         />
-                        <van-field
-                            v-model="filterParams.availableStock"
-                            name="availableStock"
-                            label="是否可借"
-                        >
+                        <van-field label="是否可借">
                             <template #input>
                                 <van-radio-group v-model="filterParams.availableStock" direction="horizontal">
                                     <van-radio name="1">可借</van-radio>
@@ -83,15 +80,16 @@
                                 </van-radio-group>
                             </template>
                         </van-field>
+
                         <van-field
                             is-link
                             readonly
-                            name="date"
                             label="出版日期"
                             :placeholder="filterParams.publishDate || '点击选择日期'"
                             @click="showDatePicker = true"
                         />
-                        <van-field name="radio" label="日期范围" v-if="filterParams.publishDate">
+
+                        <van-field v-if="filterParams.publishDate" label="日期范围">
                             <template #input>
                                 <van-radio-group v-model="filterParams.publishDateType" direction="horizontal">
                                     <van-radio name="1">之后</van-radio>
@@ -99,9 +97,22 @@
                                 </van-radio-group>
                             </template>
                         </van-field>
+
+                        <!-- 每页条数 -->
+                        <van-field label="每页条数">
+                            <template #input>
+                                <van-radio-group v-model="queryParams.pageSize" direction="horizontal">
+                                    <van-radio :name="2">2</van-radio>
+                                    <van-radio :name="4">4</van-radio>
+                                    <van-radio :name="6">6</van-radio>
+                                    <van-radio :name="10">10</van-radio>
+                                </van-radio-group>
+                            </template>
+                        </van-field>
                     </van-cell-group>
+
                     <div class="form-buttons">
-                        <van-button round block type="default" @click="onResetFilter">重置</van-button>
+                        <van-button round block @click="onResetFilter">重置</van-button>
                         <van-button round block type="primary" native-type="submit">确认</van-button>
                     </div>
                 </van-form>
@@ -111,113 +122,132 @@
         <!-- 日期选择器 -->
         <van-popup v-model:show="showDatePicker" position="bottom">
             <van-date-picker
+                title="选择出版日期"
                 @confirm="onDateConfirm"
                 @cancel="showDatePicker = false"
-                title="选择出版日期"
             />
         </van-popup>
+
+        <!-- 底部 Tabbar -->
+        <van-tabbar fixed>
+            <van-tabbar-item name="home" icon="home-o">图书精选</van-tabbar-item>
+            <van-tabbar-item name="search" icon="search">通知公告</van-tabbar-item>
+            <van-tabbar-item name="friends" icon="friends-o">智能助手</van-tabbar-item>
+            <van-tabbar-item name="setting" icon="setting-o">我的</van-tabbar-item>
+        </van-tabbar>
     </div>
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue';
-import { listBookVOByPage } from "@/api/book.js";
-import { showToast } from 'vant';
+import { ref, reactive } from 'vue'
+import { listBookVOByPage } from '@/api/book'
+import { showToast } from 'vant'
 
 // 默认封面
-const defaultCover = 'https://img.yzcdn.cn/vant/cat.jpeg';
+const defaultCover = 'https://img.yzcdn.cn/vant/cat.jpeg'
 
-// --- 响应式状态定义 ---
-const list = ref([]);
-const loading = ref(false);
-const finished = ref(false);
+// 列表数据
+const list = ref([])
+const loading = ref(false)
 
+// 弹窗状态
+const showFilter = ref(false)
+const showDatePicker = ref(false)
 
-const showFilter = ref(false);
-const showDatePicker = ref(false);
-
-
-
-// 基础查询参数（搜索框和分页）
+// 分页参数
 const queryParams = reactive({
     currentPage: 1,
-    pageSize: 10,
-    bookName: "",
-});
+    pageSize: 6,
+    bookName: ''
+})
 
-// 筛选抽屉里的参数
+// 后端分页信息
+const page = reactive({
+    total: 0
+})
+
+// 筛选参数
 const filterParams = reactive({
-    author: "",
-    publisher: "",
-    publishDate: "",
-    publishDateType: "", // 0：之前  1：之后
-    availableStock: "", // 1:可借 0不可借
-});
+    author: '',
+    publisher: '',
+    publishDate: '',
+    publishDateType: '',
+    availableStock: ''
+})
 
-const onLoad = async () => {
-    loading.value = true;
-    const params = { ...queryParams, ...filterParams };
-    const res = await listBookVOByPage(params);
-    console.log(res.data)
-    if(res.code==0) {
-        list.value.push(...res.data.records)
-        finished.value = true
-    }else{
-        showToast('数据加载失败');
-        finished.value = true
+// 获取数据
+const fetchList = async () => {
+    loading.value = true
+    const params = { ...queryParams, ...filterParams }
+    const res = await listBookVOByPage(params)
+    if (res.code === 0) {
+        // 确保 key 唯一，避免 Vue 警告
+        list.value = res.data.records.map((book, index) => ({ ...book, _uid: book.id + '-' + index }))
+        page.total = res.data.total
+    } else {
+        showToast('数据加载失败')
     }
-};
+    loading.value = false
+}
 
-
-// 搜索触发（包括清空）
+// 搜索
 const onSearch = () => {
-    // 重置列表状态
-    queryParams.currentPage = 1;
-    list.value = [];
-    finished.value = false;
-    // 重新加载数据
-    onLoad();
-};
+    queryParams.currentPage = 1
+    fetchList()
+}
 
-// 确认筛选
+// 翻页
+const onPageChange = (pageNum) => {
+    queryParams.currentPage = pageNum
+    fetchList()
+}
+
+// 筛选确认
 const onFilterConfirm = () => {
-    showFilter.value = false;
-    onSearch();
-};
+    showFilter.value = false
+    queryParams.currentPage = 1
+    fetchList()
+}
 
-// 重置筛选条件
+// 重置筛选
 const onResetFilter = () => {
-    filterParams.author = "";
-    filterParams.publisher = "";
-    filterParams.publishDate = "";
-    filterParams.publishDateType = "";
-    filterParams.availableStock = "";
-    showFilter.value = false;
-    onSearch(); // 重置后立即重新搜索
-};
+    Object.assign(filterParams, {
+        author: '',
+        publisher: '',
+        publishDate: '',
+        publishDateType: '',
+        availableStock: ''
+    })
+    showFilter.value = false
+    queryParams.currentPage = 1
+    fetchList()
+}
 
-// 日期选择确认
+// 日期选择
 const onDateConfirm = ({ selectedValues }) => {
-    filterParams.publishDate = selectedValues.join('-');
-    showDatePicker.value = false;
-};
+    filterParams.publishDate = selectedValues.join('-')
+    showDatePicker.value = false
+}
 
+// 初始化加载
+fetchList()
 </script>
 
-<style lang="scss" scoped>
+<style scoped lang="scss">
 .book-page-mobile {
-    background-color: #f7f8fa;
+    background: #f7f8fa;
     min-height: 100vh;
+    padding-bottom: 110px; /* 50px tabbar + 60px 分页条 */
 }
 
 .header-bar {
     display: flex;
     align-items: center;
-    background-color: #fff;
+    background: #fff;
     padding: 5px;
 
     .van-search {
-        flex-grow: 1;
+        flex: 1;
     }
 
     .filter-trigger {
@@ -225,8 +255,8 @@ const onDateConfirm = ({ selectedValues }) => {
         display: flex;
         flex-direction: column;
         align-items: center;
-        color: #646566;
         font-size: 10px;
+        color: #646566;
     }
 }
 
@@ -236,43 +266,46 @@ const onDateConfirm = ({ selectedValues }) => {
 
 .book-item {
     margin-bottom: 10px;
-    background-color: #fff;
 
-    // 自定义作者样式
     .book-author {
         font-size: 12px;
         color: #969799;
     }
 
-    // 覆盖 Vant Card 的标题样式
     :deep(.van-card__title) {
         font-size: 16px;
         font-weight: bold;
         line-height: 1.4;
-        max-height: 44px; // 最多显示两行
+        max-height: 44px;
     }
 }
 
+.pagination-bottom {
+    position: fixed;
+    left: 0;
+    bottom: 50px; /* Tabbar 高度 */
+    width: 100%;
+    background: #fff;
+    padding: 8px 0;
+    z-index: 99;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06);
+}
+
 .filter-popup {
-    padding: 20px 0;
     height: 100%;
     display: flex;
     flex-direction: column;
-
-    .filter-title {
-        font-size: 18px;
-        text-align: center;
-        margin: 0 0 20px 0;
-    }
+    padding: 10px 0;
 
     .van-cell-group {
-        flex-grow: 1;
+        flex: 1;
+        padding: 0 16px;
     }
 
     .form-buttons {
         display: flex;
-        padding: 20px 16px 0;
-        gap: 10px;
+        gap: 12px;
+        padding: 16px;
     }
 }
 </style>
