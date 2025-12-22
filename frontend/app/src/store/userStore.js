@@ -10,6 +10,15 @@ export const userLoginUserStore = defineStore('user', () => {
     function setLoginUser(newLoginUser) {
         loginUser.value = newLoginUser;
     }
+    function setToken(newToken) {
+        token.value = newToken;
+        // 持久化到localStorage，防止刷新丢失
+        if (newToken) {
+            localStorage.setItem('token', newToken);
+        } else {
+            localStorage.removeItem('token');
+        }
+    }
 
     async function fetchLoginUser() {
         const res = await getCurrentUser();
@@ -18,5 +27,5 @@ export const userLoginUserStore = defineStore('user', () => {
         }
     }
 
-    return {loginUser, token,fetchLoginUser}
+    return {loginUser, token,fetchLoginUser,setLoginUser,setToken}
 })
