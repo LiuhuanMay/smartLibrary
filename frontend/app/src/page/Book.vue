@@ -27,6 +27,7 @@
                 :title="book.bookName"
                 :thumb="book.cover || defaultCover"
                 class="book-item"
+                @click="onBookClick(book)"
             >
                 <template #tags>
                     <van-tag :type="book.availableStock > 0 ? 'success' : 'danger'">
@@ -154,8 +155,10 @@
 
 <script setup>
 import { ref, reactive } from 'vue'
+import { useRouter } from 'vue-router'
 import { listBookVOByPage } from '@/api/book'
 import { showToast } from 'vant'
+import { useBookStore } from '@/store/bookStore.js'
 
 // 默认封面
 const defaultCover = 'https://img.yzcdn.cn/vant/cat.jpeg'
@@ -171,6 +174,8 @@ const showAvailableStockPicker = ref(false)
 const showPageSizePicker = ref(false)
 const availableStockText = ref('')
 const pageSizeText = ref('')
+const router = useRouter()
+const bookStore = useBookStore()
 
 // 分页参数
 const queryParams = reactive({
@@ -278,15 +283,25 @@ const onPageSizeConfirm = ({ selectedOptions }) => {
     showPageSizePicker.value = false
 }
 
+const onBookClick = (book) => {
+    bookStore.setCurrentBook(book)
+    router.push({
+        name: '图书详情',
+        params: {
+            id: book.id
+        }
+    })
+}
+
 // 初始化加载
 fetchList()
 </script>
 
 <style scoped lang="scss">
 .book-page-mobile {
-    background: #f7f8fa;
+    background: linear-gradient(180deg, #f0f7ff 0%, #ffffff 100%);
     min-height: 100vh;
-    padding-bottom: 110px; /* 50px tabbar + 60px 分页条 */
+    padding-bottom: 110px;
 }
 
 .header-bar {
@@ -294,6 +309,9 @@ fetchList()
     align-items: center;
     background: #fff;
     padding: 5px;
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.12);
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
 
     .van-search {
         flex: 1;
@@ -305,27 +323,65 @@ fetchList()
         flex-direction: column;
         align-items: center;
         font-size: 10px;
-        color: #646566;
+        color: #4a90e2;
+
+        :deep(.van-icon) {
+            color: #4a90e2;
+        }
     }
 }
 
 .book-list {
-    padding: 10px;
+    padding: 12px 14px 18px;
 }
 
 .book-item {
-    margin-bottom: 10px;
+    margin-bottom: 14px;
+    border-radius: 14px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 8px 20px rgba(74, 144, 226, 0.08);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+
+    &:active {
+        transform: translateY(1px);
+        box-shadow: 0 4px 12px rgba(74, 144, 226, 0.12);
+    }
 
     .book-author {
         font-size: 12px;
-        color: #969799;
+        color: #8a8ea6;
     }
 
     :deep(.van-card__title) {
-        font-size: 16px;
+        font-size: 17px;
         font-weight: bold;
         line-height: 1.4;
         max-height: 44px;
+        color: #222a3a;
+        margin-bottom: 4px;
+    }
+
+    :deep(.van-card__price) {
+        color: #ff9f43;
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    :deep(.van-card__desc) {
+        font-size: 12px;
+        color: #9aa4c0;
+    }
+
+    :deep(.van-card) {
+        background: transparent;
+        box-shadow: none;
+        margin: 0;
+    }
+
+    :deep(.van-card__content) {
+        border-left: 1px solid #e3edff;
+        padding-left: 14px;
     }
 }
 
@@ -334,10 +390,29 @@ fetchList()
     left: 0;
     bottom: 50px; /* Tabbar 高度 */
     width: 100%;
-    background: #fff;
+    background: rgba(255, 255, 255, 0.96);
     padding: 8px 0;
     z-index: 99;
-    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 -4px 16px rgba(74, 144, 226, 0.08);
+    border-top: 1px solid #e3edff;
+}
+
+:deep(.van-tabbar) {
+    background: rgba(255, 255, 255, 0.98);
+    box-shadow: 0 -4px 16px rgba(74, 144, 226, 0.08);
+    border-top: 1px solid #e3edff;
+}
+
+:deep(.van-tabbar-item__icon) {
+    font-size: 18px;
+}
+
+:deep(.van-tabbar-item__text) {
+    font-size: 11px;
+}
+
+:deep(.van-tabbar-item--active) {
+    color: #4a90e2;
 }
 
 .filter-popup {

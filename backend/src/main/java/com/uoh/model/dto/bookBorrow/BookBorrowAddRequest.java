@@ -25,10 +25,6 @@ public class BookBorrowAddRequest implements Serializable {
      */
     private Date dueTime;
 
-    /**
-     * 实际归还时间
-     */
-    private Date returnTime;
 
 
 

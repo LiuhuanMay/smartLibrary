@@ -1,5 +1,7 @@
 package com.uoh.model.vo;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.uoh.model.entity.BookBorrow;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
@@ -17,6 +19,7 @@ public class BookBorrowVO implements Serializable {
     /**
      * 借阅记录ID
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
 
@@ -51,6 +54,10 @@ public class BookBorrowVO implements Serializable {
      */
     private Integer status;
 
+    /**
+     *审核状态
+     */
+    private Integer reviewStatus;
 
     /**
      * 逾期天数

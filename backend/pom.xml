@@ -14,7 +14,7 @@
         <java.version>17</java.version>
         <spring-boot.version>3.3.4</spring-boot.version>
         <knife.version>4.5.0</knife.version>
-        <hutool.versioin>5.8.42</hutool.versioin>
+        <hutool.version>5.8.42</hutool.version>
         <mybatis-plus.version>3.5.15</mybatis-plus.version>
     </properties>
 
@@ -81,7 +81,7 @@
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
-            <version>${hutool.versioin}</version>
+            <version>${hutool.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -101,5 +101,26 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+    <build>
+        <plugins>
+            <!-- Spring Boot 打包插件 -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring-boot.version}</version>
+                <configuration>
+                    <mainClass>com.uoh.SmartLibraryApplication</mainClass>
+                    <skip>false</skip>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>repackage</id>
+                        <goals><goal>repackage</goal></goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
 
 </project>

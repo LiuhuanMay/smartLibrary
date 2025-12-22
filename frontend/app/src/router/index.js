@@ -5,6 +5,15 @@ import {routes} from "./routes.js";
 const router = createRouter({
     history: createWebHistory(),
     routes,
+    scrollBehavior(to, from, savedPosition) {
+        if (savedPosition) {
+            return savedPosition
+        }
+        return {
+            left: 0,
+            top: 0,
+        }
+    },
 })
 
 

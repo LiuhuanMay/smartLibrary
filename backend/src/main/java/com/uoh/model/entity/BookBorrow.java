@@ -49,6 +49,11 @@ public class BookBorrow implements Serializable {
      */
     private Integer status;
 
+    /**
+     * 管理员审核状态  0审核中 1同意 2拒绝
+     */
+    private Integer reviewStatus;
+
 
     /**
      * 逾期天数
