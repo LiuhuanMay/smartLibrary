@@ -13,8 +13,6 @@ router.beforeEach(async (to, from, next) => {
     // 获取用户仓库实例
     const loginUserStore = userLoginUserStore();
     let loginUser = loginUserStore.loginUser;
-    console.log("@@@")
-    console.log(loginUser)
     // 1. 如果用户信息未获取，尝试从接口获取
     if (!loginUser) {
         try {
