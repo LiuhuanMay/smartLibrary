@@ -1,5 +1,7 @@
 package com.uoh.model.vo;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.uoh.model.entity.User;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
@@ -15,8 +17,10 @@ import java.util.Date;
 public class UserVO implements Serializable {
 
     /**
+     *
      * 用户ID
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     /**
