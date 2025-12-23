@@ -214,16 +214,24 @@ pageSizeText.value =
 // 获取数据
 const fetchList = async () => {
     loading.value = true
-    const params = { ...queryParams, ...filterParams }
-    const res = await listBookVOByPage(params)
-    if (res.code === 0) {
-        // 确保 key 唯一，避免 Vue 警告
-        list.value = res.data.records.map((book, index) => ({ ...book, _uid: book.id + '-' + index }))
-        page.total = res.data.total
-    } else {
-        showToast('数据加载失败')
+    try {
+        const params = { ...queryParams, ...filterParams }
+        const res = await listBookVOByPage(params)
+        if (res.code === 0 && res.data && Array.isArray(res.data.records)) {
+            list.value = res.data.records.map((book, index) => ({ ...book, _uid: book.id + '-' + index }))
+            page.total = res.data.total || 0
+        } else {
+            list.value = []
+            page.total = 0
+            showToast(res.message || '数据加载失败')
+        }
+    } catch (e) {
+        list.value = []
+        page.total = 0
+        showToast('数据加载失败，请稍后重试')
+    } finally {
+        loading.value = false
     }
-    loading.value = false
 }
 
 // 搜索

@@ -10,6 +10,7 @@ import com.uoh.exception.ThrowUtils;
 import com.uoh.model.dto.announcement.AnnouncementAddRequest;
 import com.uoh.model.dto.announcement.AnnouncementQueryRequest;
 import com.uoh.model.dto.announcement.AnnouncementUpdateRequest;
+import com.uoh.model.dto.announcement.AddReading;
 import com.uoh.model.entity.Announcement;
 import com.uoh.model.vo.AnnouncementVO;
 import com.uoh.service.AnnouncementService;
@@ -19,6 +20,8 @@ import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
+
+import static io.lettuce.core.KillArgs.Builder.id;
 
 /**
  * 通告管理接口
@@ -32,6 +35,34 @@ public class AnnouncementController {
 
     @Resource
     private AnnouncementService announcementService;
+
+    /**
+     * 阅读量+1
+     * @param addReading
+     * @return
+     */
+    @PostMapping("/addReading")
+    @Operation(summary = "阅读量+1")
+    public BaseResponse<String> addReading(@RequestBody AddReading addReading) {
+
+        Long id = addReading.getId();
+        Announcement announcement = announcementService.getById(id);
+
+        if (announcement == null) {
+            return ResultUtils.error(ErrorCode.PARAMS_ERROR,"公告不存在");
+        }
+
+        Integer viewCount = announcement.getViewCount();
+        announcement.setViewCount(viewCount == null ? 1 : viewCount + 1);
+
+        boolean success = announcementService.updateById(announcement);
+
+        if (success) {
+            return ResultUtils.success("阅读量+1成功");
+        } else {
+            return ResultUtils.error(ErrorCode.SYSTEM_ERROR,"阅读量更新失败");
+        }
+    }
 
 
     // region 增删改查

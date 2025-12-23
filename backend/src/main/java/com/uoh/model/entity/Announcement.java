@@ -51,12 +51,6 @@ public class Announcement implements Serializable {
      * 阅读量统计
      */
     private Integer viewCount;
-
-    /**
-     * 发布时间
-     */
-    private Date publishTime;
-
     /**
      * 发布人ID（管理员）
      */

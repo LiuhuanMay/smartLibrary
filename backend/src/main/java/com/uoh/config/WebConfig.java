@@ -23,7 +23,7 @@ public class WebConfig implements WebMvcConfigurer {
                         "/auth/sendResetCode",
                         "/auth/register",
                         "/auth/forgotPassword",
-                        "/doc.html",          // Knife4j 文档页面
+                        "/doc.html/**",          // Knife4j 文档页面
                         "/v3/api-docs/**",    // Swagger JSON
                         "/swagger-ui/**",     // Swagger UI
                         "/webjars/**"         // 静态资源

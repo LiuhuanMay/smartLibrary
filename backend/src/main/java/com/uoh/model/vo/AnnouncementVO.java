@@ -1,5 +1,6 @@
 package com.uoh.model.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.uoh.model.entity.Announcement;
@@ -38,11 +39,6 @@ public class AnnouncementVO implements Serializable {
     private Integer type;
 
     /**
-     * 状态：0下线 1发布
-     */
-    private Integer status;
-
-    /**
      * 是否置顶：0否 1是
      */
     private Integer isTop;
@@ -52,26 +48,18 @@ public class AnnouncementVO implements Serializable {
      */
     private Integer viewCount;
 
-    /**
-     * 发布时间
-     */
-    private Date publishTime;
-
-    /**
-     * 发布人
-     */
-    private Long publisher;
 
     /**
      * 创建时间
      */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Shanghai")
     private Date createTime;
 
     /**
      * 更新时间
      */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Shanghai")
     private Date updateTime;
-
 
     private static final long serialVersionUID = 1L;
 

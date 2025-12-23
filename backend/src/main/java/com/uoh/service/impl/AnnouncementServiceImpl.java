@@ -46,6 +46,7 @@ public class AnnouncementServiceImpl extends ServiceImpl<AnnouncementMapper, Ann
     @Override
     public QueryWrapper<Announcement> getQueryWrapper(AnnouncementQueryRequest announcementQueryRequest) {
         QueryWrapper<Announcement> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("status",1);
         if (announcementQueryRequest == null) {
             return queryWrapper;
         }
