@@ -4,9 +4,29 @@ export const routes = [
         redirect: "/book"
     },
     {
+        path: '/help',
+        name: 'Help',
+        component: () => import('@/page/HelpFeedback.vue')
+    },
+    {
+        path: '/about',
+        name: 'About',
+        component: () => import('@/page/AboutLibrary.vue')
+    },
+    {
+        path:"/my-borrow",
+        name:"my-borrow",
+        component:()=>import('@/page/my-borrow.vue')
+    },
+    {
         name: "登录页",
         path: "/login",
         component: () => import('@/page/Login.vue')
+    },
+    {
+        name: "个人详情页",
+        path: "/profile",
+        component: () => import('@/page/profile.vue')
     },
     {
                 path: "/book/detail/:id",

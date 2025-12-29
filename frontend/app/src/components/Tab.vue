@@ -1,10 +1,13 @@
 <template>
     <div id="tap">
-        <van-tabbar v-model="active" @change="handleTabChange">
-            <van-tabbar-item name="home" icon="home-o">图书精选</van-tabbar-item>
-            <van-tabbar-item name="search" icon="search">通知公告</van-tabbar-item>
-            <van-tabbar-item name="friends" icon="friends-o">智能助手</van-tabbar-item>
-            <van-tabbar-item name="setting" icon="setting-o">我的</van-tabbar-item>
+        <van-tabbar v-model="active" @change="handleTabChange" active-color="#1989fa" placeholder border>
+            <van-tabbar-item name="home" icon="apps-o">图书精选</van-tabbar-item>
+
+            <van-tabbar-item name="notice" icon="bullhorn-o">通知公告</van-tabbar-item>
+
+            <van-tabbar-item name="assistant" icon="service-o">智能助手</van-tabbar-item>
+
+            <van-tabbar-item name="user" icon="user-o">我的</van-tabbar-item>
         </van-tabbar>
     </div>
 </template>
@@ -20,9 +23,9 @@ const router = useRouter();
 // 定义tabbar与路由的映射关系（核心：方便匹配）
 const tabRouteMap = [
     { tabName: "home", path: "/book" }, // 图书精选
-    { tabName: "search", path: "/notice" }, // 通知公告
-    { tabName: "friends", path: "/assistant" }, // 智能助手（原绝对路径）
-    { tabName: "setting", path: "/my" }, // 我的
+    { tabName: "notice", path: "/notice" }, // 通知公告
+    { tabName: "assistant", path: "/assistant" }, // 智能助手（原绝对路径）
+    { tabName: "user", path: "/my" }, // 我的
 ];
 
 // 初始化active：根据当前路由匹配对应的tabName
