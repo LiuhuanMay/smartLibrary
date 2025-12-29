@@ -1,63 +1,31 @@
 <template>
-  <div id="notice-page">
-    <van-sticky>
-      <div class="notice-sticky-wrapper">
-        <div class="notice-header">
-          <div class="notice-header-main">
-            <div class="notice-title-row">
-              <span class="notice-title-main">通知公告</span>
-              <span class="notice-badge">Smart Library</span>
-            </div>
-            <p class="notice-subtitle">图书馆的重要通知和系统消息会集中展示在这里</p>
-          </div>
-          <div class="notice-header-extra">
-            <span class="notice-tip">下拉刷新，实时获取最新公告</span>
-            <div class="notice-summary" v-if="totalCount">
-              <van-icon name="volume-o" class="summary-icon" />
-              <span class="summary-text">已为你加载 {{ totalCount }} 条公告</span>
-            </div>
-          </div>
-        </div>
-        <div class="notice-tabs">
-          <van-tabs v-model:active="activeTab">
-            <van-tab>
-              <template #title>
-                <span class="tab-icon-text">
-                  <van-icon name="apps-o" />
-                  <span>全部</span>
-                </span>
-              </template>
-            </van-tab>
-            <van-tab>
-              <template #title>
-                <span class="tab-icon-text">
-                  <van-icon name="volume-o" />
-                  <span>普通公告</span>
-                </span>
-              </template>
-            </van-tab>
-            <van-tab>
-              <template #title>
-                <span class="tab-icon-text">
-                  <van-icon name="bell" />
-                  <span>系统通知</span>
-                </span>
-              </template>
-            </van-tab>
-            <van-tab>
-              <template #title>
-                <span class="tab-icon-text">
-                  <van-icon name="setting-o" />
-                  <span>维护公告</span>
-                </span>
-              </template>
-            </van-tab>
-          </van-tabs>
-        </div>
-      </div>
-    </van-sticky>
+  <div id="notice-page" class="full-screen-container fixed-page">
+<!--    <van-nav-bar-->
+<!--      title="通知公告"-->
+<!--      left-arrow-->
+<!--      @click-left="goBack"-->
+<!--      fixed-->
+<!--      placeholder-->
+<!--    />-->
 
-    <div class="notice-content">
+      <van-nav-bar
+              title="通知公告"
+              @click-left="goBack"
+              fixed
+              placeholder
+      />
+
+
+      <div class="notice-tabs-wrapper">
+      <van-tabs v-model:active="activeTab" sticky offset-top="46px">
+        <van-tab title="全部" />
+        <van-tab title="普通公告" />
+        <van-tab title="系统通知" />
+        <van-tab title="维护公告" />
+      </van-tabs>
+    </div>
+
+    <div class="notice-scroll-area">
       <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
         <van-list
           v-model:loading="loading"
@@ -68,45 +36,35 @@
         >
           <template v-if="showSkeleton">
             <div class="notice-skeleton-list">
-              <van-skeleton
-                v-for="index in 4"
-                :key="index"
-                title
-                :row="2"
-                animated
-              />
+              <van-skeleton v-for="index in 5" :key="index" title :row="2" animated />
             </div>
           </template>
+
           <template v-else-if="displayList.length">
-            <van-cell-group inset class="notice-list">
-              <van-cell
+            <div class="notice-list">
+              <div
                 v-for="item in displayList"
                 :key="item.id"
                 class="notice-item"
                 :class="{ 'notice-item--top': item.isTop }"
                 @click="onNoticeClick(item)"
               >
-                <template #title>
-                  <div class="notice-title-wrapper">
-                    <van-tag v-if="item.isTop" type="danger" class="top-tag">置顶</van-tag>
-                    <van-tag :type="tagType(item.type)" class="category-tag">{{ formatType(item.type) }}</van-tag>
-                    <span class="notice-title">{{ item.title }}</span>
+                <div class="notice-item-main">
+                  <div class="notice-title-row">
+                    <van-tag v-if="item.isTop" type="danger" size="small">置顶</van-tag>
+                    <van-tag :type="tagType(item.type)" size="small">{{ formatType(item.type) }}</van-tag>
+                    <span class="notice-title-text">{{ item.title }}</span>
                   </div>
-                </template>
-                <template #label>
-                  <div class="notice-meta">
-                    <span class="meta-time">
-                      <van-icon name="clock-o" /> {{ item.createTime }}
-                    </span>
-                    <span class="view-count">
-                      <van-icon name="eye-o" /> {{ item.viewCount }}
-                    </span>
+                  <div class="notice-meta-row">
+                    <span class="meta-item"><van-icon name="clock-o" /> {{ item.createTime }}</span>
+                    <span class="meta-item"><van-icon name="eye-o" /> {{ item.viewCount }}</span>
                   </div>
-                </template>
-              </van-cell>
-            </van-cell-group>
+                </div>
+              </div>
+            </div>
           </template>
-          <van-empty v-else-if="!loading" image="search" description="暂无通知公告" />
+
+          <van-empty v-else-if="!loading" description="暂无通知公告" />
         </van-list>
       </van-pull-refresh>
     </div>
@@ -115,10 +73,12 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import { listAnnouncementVOByPage, addReading } from '@/api/announcement.js';
 import { showDialog } from 'vant';
 import 'vant/es/dialog/style';
 
+const router = useRouter();
 const sourceList = ref([]);
 const loading = ref(false);
 const finished = ref(false);
@@ -128,12 +88,12 @@ const pageSize = ref(10);
 const activeTab = ref(0);
 const fetching = ref(false);
 
-const totalCount = computed(() => sourceList.value.length);
+const goBack = () => {
+  router.back();
+};
 
 const displayList = computed(() => {
-  if (activeTab.value === 0) {
-    return sourceList.value;
-  }
+  if (activeTab.value === 0) return sourceList.value;
   const type = activeTab.value - 1;
   return sourceList.value.filter(item => item.type === type);
 });
@@ -141,20 +101,9 @@ const displayList = computed(() => {
 const showSkeleton = computed(() => loading.value && !sourceList.value.length);
 
 const onLoad = async () => {
-  if (finished.value) {
-    loading.value = false;
-    return;
-  }
-  if (fetching.value) {
-    return;
-  }
+  if (finished.value || fetching.value) return;
   fetching.value = true;
   loading.value = true;
-
-  if (refreshing.value) {
-    sourceList.value = [];
-    refreshing.value = false;
-  }
 
   try {
     const res = await listAnnouncementVOByPage({
@@ -164,7 +113,6 @@ const onLoad = async () => {
     if (res.data && Array.isArray(res.data.records)) {
       sourceList.value.push(...res.data.records);
       sourceList.value.sort((a, b) => b.isTop - a.isTop);
-
       if (res.data.records.length < pageSize.value) {
         finished.value = true;
       } else {
@@ -178,6 +126,7 @@ const onLoad = async () => {
   } finally {
     fetching.value = false;
     loading.value = false;
+    refreshing.value = false;
   }
 };
 
@@ -188,31 +137,23 @@ const onRefresh = () => {
   onLoad();
 };
 
-onMounted(() => {
-  onLoad();
-});
+onMounted(() => onLoad());
 
 const formatType = type => {
-  const typeMap = {
-    0: '普通公告',
-    1: '系统通知',
-    2: '维护公告',
-  };
-  return typeMap[type] || '未知类型';
+  const typeMap = { 0: '普通', 1: '系统', 2: '维护' };
+  return typeMap[type] || '其他';
 };
 
 const tagType = type => {
-  const tagMap = {
-    0: 'primary',
-    1: 'success',
-    2: 'warning',
-  };
+  const tagMap = { 0: 'primary', 1: 'success', 2: 'warning' };
   return tagMap[type] || 'default';
 };
 
 const onNoticeClick = item => {
   showDialog({
+    title: item.title,
     message: item.content,
+    messageAlign: 'left',
   }).then(() => {
     addReading({ id: item.id });
   });
@@ -220,237 +161,103 @@ const onNoticeClick = item => {
 </script>
 
 <style lang="scss" scoped>
-#notice-page {
-  min-height: 100vh;
-  background: linear-gradient(180deg, #f0f7ff 0%, #ffffff 100%);
-  padding-bottom: 80px;
+/* 核心修复：确保页面在最顶层且背景不透明 */
+//.fixed-page {
+//  position: fixed; /* 使用 fixed 定位脱离文档流 */
+//  top: 0;
+//  left: 0;
+//  right: 0;
+//  bottom: 0;
+//  z-index: 999; /* 确保高于全局的 Tabbar (Vant Tabbar 通常是 1) */
+//  background-color: #f7f8fa; /* 必须有背景色，否则会透到底下 */
+//}
 
-  .notice-sticky-wrapper {
-    background: linear-gradient(180deg, #f0f7ff 0%, #ffffff 100%);
-  }
+.full-screen-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
 
-  .notice-header {
-    padding: 16px 16px 4px 16px;
+.notice-tabs-wrapper {
+  background: #fff;
+  border-bottom: 1px solid #ebedf0;
+}
 
-    .notice-header-main {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
+.notice-scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0;
+  /* 适配底部安全区 */
+  padding-bottom: env(safe-area-inset-bottom);
+}
 
-      .notice-title-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
+.notice-list {
+  padding: 0 12px;
 
-        .notice-title-main {
-          font-size: 18px;
-          font-weight: 600;
-          color: #222a3a;
-        }
+  .notice-item {
+    background: #fff;
+    margin-bottom: 12px;
+    padding: 14px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    position: relative;
 
-        .notice-badge {
-          padding: 2px 8px;
-          border-radius: 999px;
-          font-size: 10px;
-          color: #4a90e2;
-          background: rgba(74, 144, 226, 0.08);
-        }
-      }
-
-      .notice-subtitle {
-        font-size: 12px;
-        color: #8a8ea6;
-      }
+    &:active {
+      background: #f2f3f5;
     }
 
-    .notice-header-extra {
-      margin-top: 8px;
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 15%;
+      height: 70%;
+      width: 3px;
+      background: #1989fa;
+      border-radius: 0 2px 2px 0;
+    }
+
+    .notice-title-row {
       display: flex;
-      flex-direction: column;
+      align-items: center;
       gap: 6px;
 
-      .notice-tip {
-        display: inline-block;
-        padding: 4px 10px;
-        border-radius: 999px;
-        font-size: 11px;
-        color: #3e82f7;
-        background: rgba(62, 130, 247, 0.08);
+      .notice-title-text {
+        flex: 1;
+        font-size: 15px;
+        font-weight: 600;
+        color: #323233;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
+    }
 
-      .notice-summary {
+    .notice-meta-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #969799;
+
+      .meta-item {
         display: flex;
         align-items: center;
-        font-size: 11px;
-        color: #6b7a99;
-
-        .summary-icon {
-          font-size: 14px;
-          margin-right: 4px;
-          color: #4a90e2;
-        }
+        gap: 3px;
       }
     }
   }
 
-  .notice-tabs {
-    padding: 0 6px 4px;
-
-    :deep(.van-tabs__wrap) {
-      background: transparent;
-      padding: 0 12px;
-    }
-
-    :deep(.van-tabs__nav) {
-      margin: 0 2px;
-      border-radius: 999px;
-      background: #ffffff;
-      box-shadow: 0 2px 8px rgba(74, 144, 226, 0.12);
-      padding: 2px;
-    }
-
-    :deep(.van-tab) {
-      flex: 1;
-      border-radius: 999px;
-    }
-
-    :deep(.van-tab--active) {
-      background: linear-gradient(135deg, #5a9bff 0%, #3e82f7 100%);
-      color: #ffffff;
-    }
-
-    .tab-icon-text {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      font-size: 13px;
-
-      .van-icon {
-        font-size: 14px;
-      }
+  .notice-item--top {
+    &::before {
+      background: #ee0a24;
     }
   }
+}
 
-  .notice-content {
-    padding: 4px 2px 12px;
-  }
-
-  .notice-skeleton-list {
-    padding: 8px 12px 16px;
-
-    :deep(.van-skeleton) {
-      margin-bottom: 12px;
-      border-radius: 12px;
-    }
-  }
-
-  .notice-list {
-    padding: 4px 0 16px;
-
-    .notice-item {
-      margin: 8px 12px;
-      border-radius: 12px;
-      background: #ffffff;
-      box-shadow: 0 6px 16px rgba(74, 144, 226, 0.08);
-      position: relative;
-      overflow: hidden;
-      transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
-
-      &::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        width: 3px;
-        background: linear-gradient(180deg, #5a9bff 0%, #3e82f7 100%);
-        opacity: 0.7;
-      }
-
-      &:active {
-        transform: scale(0.985);
-        background: #f7f9ff;
-        box-shadow: 0 4px 12px rgba(74, 144, 226, 0.12);
-      }
-
-      .notice-title-wrapper {
-        display: flex;
-        align-items: center;
-
-        .top-tag {
-          margin-right: 5px;
-        }
-
-        .category-tag {
-          margin-right: 5px;
-        }
-
-        .notice-title {
-          font-weight: bold;
-          flex: 1;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-        }
-      }
-
-      .notice-meta {
-        display: flex;
-        justify-content: space-between;
-        color: #969799;
-        font-size: 12px;
-        margin-top: 8px;
-
-        .meta-time {
-          max-width: 60%;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          display: flex;
-          align-items: center;
-
-          .van-icon {
-            margin-right: 4px;
-          }
-        }
-
-        .view-count {
-          display: flex;
-          align-items: center;
-          position: relative;
-          padding-left: 10px;
-
-          &::before {
-            content: '';
-            position: absolute;
-            left: 3px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 3px;
-            height: 3px;
-            border-radius: 50%;
-            background: #d8d8d8;
-          }
-
-          .van-icon {
-            margin-right: 2px;
-          }
-        }
-      }
-    }
-
-    .notice-item--top {
-      box-shadow: 0 8px 18px rgba(255, 96, 96, 0.2);
-
-      &::before {
-        background: linear-gradient(180deg, #ff5c7a 0%, #ff9b6b 100%);
-      }
-    }
-  }
-
-  :deep(.van-empty) {
-    padding-top: 40px;
-  }
+:deep(.van-nav-bar) {
+  z-index: 1000;
 }
 </style>
