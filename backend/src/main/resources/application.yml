@@ -20,9 +20,9 @@ knife4j:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://10.2.250.2:3306/library
+    url: jdbc:mysql://127.0.0.1:3306/library
     username: root
-    password: studio2025
+    password: 123456
   mail:
     host: smtp.qq.com
     port: 587
@@ -37,11 +37,14 @@ spring:
             enable: true
   data:
     redis:
-      host: 10.2.250.2
+      host: 127.0.0.1:3306
       database: 0
       timeout: 5000ms
       password: 123456
       port: 6490
+  ai:
+    dashscope:
+      api-key: sk-4b39f135f3ea46628ceed60412f34028
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

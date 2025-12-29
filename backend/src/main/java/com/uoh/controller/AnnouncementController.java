@@ -7,10 +7,10 @@ import com.uoh.common.ErrorCode;
 import com.uoh.common.ResultUtils;
 import com.uoh.exception.BusinessException;
 import com.uoh.exception.ThrowUtils;
+import com.uoh.model.dto.announcement.AddReading;
 import com.uoh.model.dto.announcement.AnnouncementAddRequest;
 import com.uoh.model.dto.announcement.AnnouncementQueryRequest;
 import com.uoh.model.dto.announcement.AnnouncementUpdateRequest;
-import com.uoh.model.dto.announcement.AddReading;
 import com.uoh.model.entity.Announcement;
 import com.uoh.model.vo.AnnouncementVO;
 import com.uoh.service.AnnouncementService;
@@ -21,8 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
-import static io.lettuce.core.KillArgs.Builder.id;
-
 /**
  * 通告管理接口
  *
@@ -32,6 +30,8 @@ import static io.lettuce.core.KillArgs.Builder.id;
 @Tag(name = "通告管理")
 @Slf4j
 public class AnnouncementController {
+
+
 
     @Resource
     private AnnouncementService announcementService;
