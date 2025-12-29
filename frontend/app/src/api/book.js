@@ -20,3 +20,8 @@ export const addBookBorrow = (data)=>{
 }
 
 
+
+export const myListBookBorrowVOByPage=(data)=>{
+    return http.post("/bookBorrow/myList/page/vo",data)
+}
+

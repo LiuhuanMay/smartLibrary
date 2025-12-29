@@ -1,18 +1,25 @@
-import {ref} from "vue";
-import {defineStore} from "pinia";
-import {getCurrentUser} from "@/api/auth.js";
+import { ref } from "vue";
+import { defineStore } from "pinia";
+import { getCurrentUser } from "@/api/auth.js";
 
 export const userLoginUserStore = defineStore('user', () => {
-    const loginUser = ref(null)
-
+    // 1. 状态定义
+    const loginUser = ref(JSON.parse(localStorage.getItem('user_info')) || null)
     const token = ref(localStorage.getItem('token') || null)
 
+    // 2. 设置用户信息 (增加持久化)
     function setLoginUser(newLoginUser) {
         loginUser.value = newLoginUser;
+        if (newLoginUser) {
+            localStorage.setItem('user_info', JSON.stringify(newLoginUser));
+        } else {
+            localStorage.removeItem('user_info');
+        }
     }
+
+    // 3. 设置 Token
     function setToken(newToken) {
         token.value = newToken;
-        // 持久化到localStorage，防止刷新丢失
         if (newToken) {
             localStorage.setItem('token', newToken);
         } else {
@@ -20,12 +27,36 @@ export const userLoginUserStore = defineStore('user', () => {
         }
     }
 
+    // 4. 获取当前登录用户
     async function fetchLoginUser() {
-        const res = await getCurrentUser();
-        if (res.code === 0 && res.data) {
-            loginUser.value = res.data;
+        try {
+            const res = await getCurrentUser();
+            console.log(res.data)
+            if (res.code === 0 && res.data) {
+                setLoginUser(res.data); // 使用封装好的方法，顺便做持久化
+            }
+        } catch (error) {
+            console.error("获取用户信息失败", error);
         }
     }
 
-    return {loginUser, token,fetchLoginUser,setLoginUser,setToken}
+    // 5. 退出登录 (核心新增)
+    function logout() {
+        // 清空响应式数据
+        token.value = null;
+        loginUser.value = null;
+        // 清理本地存储
+        localStorage.removeItem('token');
+        localStorage.removeItem('user_info');
+        // 可选：如果还有其他缓存（如搜索历史、图书草稿等）也可以在这里清理
+    }
+
+    return {
+        loginUser,
+        token,
+        fetchLoginUser,
+        setLoginUser,
+        setToken,
+        logout
+    }
 })

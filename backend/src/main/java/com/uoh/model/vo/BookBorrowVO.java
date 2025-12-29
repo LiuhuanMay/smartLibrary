@@ -55,7 +55,7 @@ public class BookBorrowVO implements Serializable {
     private Integer status;
 
     /**
-     *审核状态
+     *审核状态  0未审核 1同意 2拒绝
      */
     private Integer reviewStatus;
 

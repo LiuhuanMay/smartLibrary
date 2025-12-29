@@ -26,7 +26,7 @@ export const routes = [
     {
         name: "个人详情页",
         path: "/profile",
-        component: () => import('@/page/profile.vue')
+        component: () => import('@/page/Profile.vue')
     },
     {
                 path: "/book/detail/:id",

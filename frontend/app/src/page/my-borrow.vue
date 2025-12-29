@@ -47,11 +47,11 @@
             </span>
                     </div>
                     <van-button
-                            v-if="item.status === 0 && item.reviewStatus === 1"
-                            size="small"
-                            plain
-                            round
-                            type="primary"
+                        v-if="item.status === 0 && item.reviewStatus === 1"
+                        size="small"
+                        plain
+                        round
+                        type="primary"
                     >续借申请</van-button>
                 </div>
             </div>
@@ -62,46 +62,16 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
-
+import {ref, computed, onMounted} from 'vue';
+import {myListBookBorrowVOByPage} from "@/api/book.js";
+onMounted(async ()=>{
+    const res = await myListBookBorrowVOByPage({currentPage:1, pageSize:10})
+    borrowList.value = res.data.records
+})
 const activeTab = ref('all');
 
 // 模拟后端返回的数据 List
-const borrowList = ref([
-    {
-        id: "202512290001",
-        userName: "张三",
-        bookName: "深入理解Java虚拟机",
-        borrowTime: "2025-12-01 10:00:00",
-        dueTime: "2025-12-31 10:00:00",
-        returnTime: null,
-        status: 0, // 借阅中
-        reviewStatus: 1, // 同意
-        overdueDays: 0
-    },
-    {
-        id: "202512290002",
-        userName: "张三",
-        bookName: "解忧杂货店",
-        borrowTime: "2025-11-01 09:00:00",
-        dueTime: "2025-12-01 09:00:00",
-        returnTime: "2025-11-28 15:00:00",
-        status: 1, // 已归还
-        reviewStatus: 1,
-        overdueDays: 0
-    },
-    {
-        id: "202512290003",
-        userName: "张三",
-        bookName: "三体：全集",
-        borrowTime: "2025-11-15 14:00:00",
-        dueTime: "2025-12-15 14:00:00",
-        returnTime: null,
-        status: 2, // 逾期
-        reviewStatus: 1,
-        overdueDays: 14
-    }
-]);
+const borrowList = ref([]);
 
 // 过滤逻辑
 const filteredList = computed(() => {
@@ -130,65 +100,65 @@ const formatDate = (val) => val ? val.substring(0, 10) : '-';
 
 <style lang="scss" scoped>
 .borrow-page {
-  min-height: 100vh;
-  background-color: #f7f8fa;
+    min-height: 100vh;
+    background-color: #f7f8fa;
 
-  .list-container {
-    padding: 12px;
+    .list-container {
+        padding: 12px;
 
-    .borrow-card {
-      background: #fff;
-      border-radius: 8px;
-      padding: 16px;
-      margin-bottom: 12px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        .borrow-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 
-      .card-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 12px;
-        .book-name {
-          font-size: 16px;
-          font-weight: bold;
-          color: #323233;
+            .card-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 12px;
+                .book-name {
+                    font-size: 16px;
+                    font-weight: bold;
+                    color: #323233;
+                }
+            }
+
+            .card-body {
+                .info-row {
+                    margin-bottom: 6px;
+                    font-size: 13px;
+                    .label {
+                        color: #969799;
+                    }
+                    .value {
+                        color: #323233;
+                    }
+                    .error-text {
+                        color: #ee0a24;
+                        font-weight: bold;
+                    }
+                }
+            }
+
+            .card-footer {
+                margin-top: 12px;
+                padding-top: 12px;
+                border-top: 1px solid #f2f3f5;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                font-size: 12px;
+
+                .review-status {
+                    color: #646566;
+                    .review-0 { color: #ff976a; }
+                    .review-1 { color: #07c160; }
+                    .review-2 { color: #ee0a24; }
+                }
+            }
         }
-      }
-
-      .card-body {
-        .info-row {
-          margin-bottom: 6px;
-          font-size: 13px;
-          .label {
-            color: #969799;
-          }
-          .value {
-            color: #323233;
-          }
-          .error-text {
-            color: #ee0a24;
-            font-weight: bold;
-          }
-        }
-      }
-
-      .card-footer {
-        margin-top: 12px;
-        padding-top: 12px;
-        border-top: 1px solid #f2f3f5;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 12px;
-
-        .review-status {
-          color: #646566;
-          .review-0 { color: #ff976a; }
-          .review-1 { color: #07c160; }
-          .review-2 { color: #ee0a24; }
-        }
-      }
     }
-  }
 }
 </style>
