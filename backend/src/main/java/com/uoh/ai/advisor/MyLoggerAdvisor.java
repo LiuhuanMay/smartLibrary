@@ -13,19 +13,19 @@ import reactor.core.publisher.Flux;
 @Slf4j
 public class MyLoggerAdvisor implements CallAdvisor, StreamAdvisor {
     private ChatClientRequest before(ChatClientRequest request) {
-        log.info("AI Request: {}", request.prompt());
+           log.info("AI Request: {}", request.prompt());
         return request;
     }
 
     private void observeAfter(ChatClientResponse chatClientResponse) {
-        log.info("AI Response: {}", chatClientResponse.chatResponse().getResult().getOutput().getText());
+             log.info("AI Response: {}", chatClientResponse.chatResponse().getResult().getOutput().getText());
     }
 
     @Override
     public ChatClientResponse adviseCall(ChatClientRequest chatClientRequest, CallAdvisorChain callAdvisorChain) {
         chatClientRequest = before(chatClientRequest);
         ChatClientResponse chatClientResponse =  callAdvisorChain.nextCall(chatClientRequest);
-        observeAfter(chatClientResponse);
+         observeAfter(chatClientResponse);
         return chatClientResponse;
     }
 

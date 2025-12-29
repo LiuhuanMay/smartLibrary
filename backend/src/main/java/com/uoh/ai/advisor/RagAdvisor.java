@@ -11,11 +11,9 @@ import org.springframework.ai.chat.client.advisor.api.StreamAdvisorChain;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
-import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -47,8 +45,8 @@ public class RagAdvisor implements CallAdvisor, StreamAdvisor {
             // 执行检索
             SearchRequest searchRequest = SearchRequest.builder()
                     .query(userQuery)
-                    .topK(1) // 借书场景通常精准匹配 1 本即可
-                    .similarityThreshold(0.6)
+                    .topK(3)
+                    .similarityThreshold(0)
                     .build();
 
             List<Document> docs =SimpleVectorStore.similaritySearch(searchRequest);
@@ -57,8 +55,7 @@ public class RagAdvisor implements CallAdvisor, StreamAdvisor {
                 // 获取 ID
                 String bookId = String.valueOf(docs.get(0).getMetadata().getOrDefault("bookId", ""));
 
-                // 【关键点】：将 ID 强行塞进当前 UserMessage 的增强文本中
-                // 这样 MemoryAdvisor 就会把包含 ID 的这段话存入数据库
+                // 将书本id存储到对话上下文中
                 String augmentedText = String.format(
                         "%s\n(系统检索到书籍ID：%s，请在接下来的对话中使用该 ID 执行工具调用)",
                         userQuery, bookId
@@ -69,8 +66,6 @@ public class RagAdvisor implements CallAdvisor, StreamAdvisor {
                         .build();
             }
         }
-
-        // 继续链条：这里会经过 MessageChatMemoryAdvisor，它会把 augmentedText 存起来
         return callAdvisorChain.nextCall(chatClientRequest);
     }
 

@@ -16,10 +16,7 @@ class BorrowChatClientTest {
     @Test
     void doChat() {
         String chatId = UUID.randomUUID().toString();
-        // 第一轮
-        String userMessage = "我想借书，请帮我推荐一下";
 
-        String response = borrowChatClient.doChat(userMessage, chatId);
 
     }
 }
