@@ -31,7 +31,6 @@ export const userLoginUserStore = defineStore('user', () => {
     async function fetchLoginUser() {
         try {
             const res = await getCurrentUser();
-            console.log(res.data)
             if (res.code === 0 && res.data) {
                 setLoginUser(res.data); // 使用封装好的方法，顺便做持久化
             }
@@ -48,7 +47,6 @@ export const userLoginUserStore = defineStore('user', () => {
         // 清理本地存储
         localStorage.removeItem('token');
         localStorage.removeItem('user_info');
-        // 可选：如果还有其他缓存（如搜索历史、图书草稿等）也可以在这里清理
     }
 
     return {

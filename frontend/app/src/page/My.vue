@@ -26,17 +26,19 @@
 
         <div class="stat-grid">
             <van-grid :column-num="3" :border="false">
-                <van-grid-item>
-                    <div class="stat-num">12</div>
+                <van-grid-item to="/my-borrow">
+                    <div class="stat-num">{{ stats.borrowingCount }}</div>
                     <div class="stat-label">在借中</div>
                 </van-grid-item>
-                <van-grid-item>
-                    <div class="stat-num">58</div>
+                <van-grid-item to="/my-borrow">
+                    <div class="stat-num">{{ stats.totalBorrowed }}</div>
                     <div class="stat-label">累计借阅</div>
                 </van-grid-item>
-                <van-grid-item>
-                    <div class="stat-num">0</div>
-                    <div class="stat-label">待缴违约</div>
+                <van-grid-item to="/my-borrow">
+                    <div class="stat-num" :class="{ 'error-text': stats.overdueCount > 0 }">
+                        {{ stats.overdueCount }}
+                    </div>
+                    <div class="stat-label">逾期未还</div>
                 </van-grid-item>
             </van-grid>
         </div>
@@ -60,25 +62,48 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import { showConfirmDialog, showToast } from 'vant';
 import { userLoginUserStore } from "@/store/userStore.js";
+import { myListBookBorrowVOByPage } from "@/api/book.js"; // 引入借阅接口
 import { useRouter } from 'vue-router';
-import 'vant/es/toast/style';
-import 'vant/es/dialog/style';
 
 const userStore = userLoginUserStore();
 const router = useRouter();
 
-// 使用 computed 实时关联 Store 中的数据
-// 当 Profile 页面修改 store 时，这里的 userInfo 会自动更新
-const userInfo = computed(() => {
-    return userStore.loginUser || {
-        nickname: '未获取信息',
-        phone: '请重新登录',
-        avatar: '',
-        role: 0
-    };
+// 用户信息
+const userInfo = computed(() => userStore.loginUser || {});
+
+// --- 统计逻辑开始 ---
+const stats = ref({
+    borrowingCount: 0, // 在借中 (status = 1)
+    totalBorrowed: 0,  // 累计总数
+    overdueCount: 0    // 逾期 (status = 3)
+});
+
+const fetchStats = async () => {
+    try {
+        // 请求接口，设置足够大的 pageSize 以便统计全量数据
+        const res = await myListBookBorrowVOByPage({ currentPage: 1, pageSize: 20 });
+        if (res.code === 0) {
+            const list = res.data.records || [];
+
+            stats.value.totalBorrowed = res.data.total || list.length;
+
+            // 统计 status 为 1 的数量（借阅中）
+            stats.value.borrowingCount = list.filter(item => item.status === 1).length;
+
+            // 统计 status 为 3 的数量（逾期）
+            stats.value.overdueCount = list.filter(item => item.status === 3).length;
+        }
+    } catch (error) {
+        console.error("统计数据获取失败", error);
+    }
+};
+// --- 统计逻辑结束 ---
+
+onMounted(() => {
+    fetchStats();
 });
 
 const goToProfile = () => {
@@ -90,7 +115,7 @@ const handleLogout = () => {
         title: '提示',
         message: '确认退出登录吗？',
     }).then(() => {
-        userStore.logout(); // 调用 Pinia 里的退出逻辑
+        userStore.logout();
         showToast('已安全退出');
         router.replace('/login');
     }).catch(() => {});
@@ -107,18 +132,11 @@ const handleLogout = () => {
         background-color: #fff;
         padding: 30px 20px;
         margin-bottom: 12px;
-        cursor: pointer;
-        transition: background-color 0.1s;
-
-        &:active { background-color: #f2f3f5; }
-
         .user-info {
             padding-left: 15px;
             .nickname { font-size: 20px; font-weight: bold; color: #323233; margin-bottom: 4px; }
             .phone { font-size: 13px; color: #969799; margin-bottom: 6px; }
-            .role-tag { font-size: 10px; }
         }
-        .arrow-col { display: flex; align-items: center; justify-content: flex-end; }
     }
 
     .stat-grid {
@@ -126,7 +144,14 @@ const handleLogout = () => {
         background: #fff;
         border-radius: 8px;
         overflow: hidden;
-        .stat-num { font-size: 18px; font-weight: bold; color: #1989fa; text-align: center;}
+        .stat-num {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1989fa;
+            text-align: center;
+            // 逾期数字变红
+            &.error-text { color: #ee0a24; }
+        }
         .stat-label { font-size: 12px; color: #646566; margin-top: 4px; text-align: center;}
     }
 

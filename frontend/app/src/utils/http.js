@@ -22,17 +22,16 @@ service.interceptors.request.use(config => {
 
 //响应拦截器
 service.interceptors.response.use(
-
     res => {
-       return res.data
-    } ,
-    err => {
-        const code = err.response?.data?.code;
-        if (code === 40100) {
-            // token 过期 / 无效 / 篡改 → 统一未登录
-            location.href = '/login';
+        if (res.data.code === 40100) {
+            const loginUserStore = userLoginUserStore();
+            loginUserStore.logout(); // 清理本地缓存，防止死循环判断
+            // 如果不是在登录页，才跳转到登录页
+            if (window.location.pathname !== '/login') {
+                router.push('/login');
+            }
         }
-        return Promise.reject(err);
+        return res.data;
     }
 )
 

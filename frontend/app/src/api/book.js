@@ -20,8 +20,21 @@ export const addBookBorrow = (data)=>{
 }
 
 
-
+/**
+ *
+ * @param data
+ * @returns {Promise<axios.AxiosResponse<any>>}
+ */
 export const myListBookBorrowVOByPage=(data)=>{
     return http.post("/bookBorrow/myList/page/vo",data)
 }
 
+/**
+ *
+ * @param data
+ * @returns {Promise<axios.AxiosResponse<any>>}
+ */
+
+export const bookReturn=(data)=>{
+    return http.post("/bookBorrow/returnBook",data)
+}

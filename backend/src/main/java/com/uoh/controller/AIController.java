@@ -9,10 +9,7 @@ import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.messages.Message;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -38,6 +35,9 @@ public class AIController {
             String chatId
     ) {}
 
+
+    public record ChatIdRequest(String chatId) {}
+
     @PostMapping("/chat")
     @Operation(summary = "对话")
     public BaseResponse<String> chat(@RequestBody ChatRequest chatRequest) {
@@ -53,14 +53,29 @@ public class AIController {
 
     @PostMapping("/getBorrowHistory")
     @Operation(summary = "借阅对话历史")
-    public BaseResponse<List<Message>> getBorrowHistory(String chatId) {
+    public BaseResponse<List<Message>> getBorrowHistory(@RequestParam("chatId") String chatId) {
         return ResultUtils.success(inMemoryBorrowChatMemory.get(chatId));
     }
 
     @PostMapping("/getPlatformHistory")
     @Operation(summary = "平台对话历史")
-    public BaseResponse<List<Message>> getPlatformHistory(String chatId) {
+    public BaseResponse<List<Message>> getPlatformHistory(@RequestParam("chatId") String chatId) {
         return ResultUtils.success(inMemoryPlatformChatMemory.get(chatId));
+    }
+
+    @PostMapping("/clearBorrowHistory")
+    @Operation(summary = "清空借阅对话历史")
+    public BaseResponse<Boolean> clearBorrowHistory(@RequestBody ChatIdRequest request) {
+        // 从 record 中获取 chatId
+        inMemoryBorrowChatMemory.clear(request.chatId());
+        return ResultUtils.success(true);
+    }
+
+    @PostMapping("/clearPlatformHistory")
+    @Operation(summary = "清空平台对话历史")
+    public BaseResponse<Boolean> clearPlatformHistory(@RequestBody ChatIdRequest request) {
+        inMemoryPlatformChatMemory.clear(request.chatId());
+        return ResultUtils.success(true);
     }
 
 }
