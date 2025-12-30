@@ -34,7 +34,7 @@ export default defineConfig({
         proxy: {
             // 代理的规则
             '/api': {
-                target: 'http://localhost:8101', // 你的目标服务器地址
+                target: 'http://localhost:8081', // 你的目标服务器地址
                 changeOrigin: true, // 这一项表示是否改变请求头中的origin字段
                 rewrite: (path) => path.replace(/^\/api/, '') // 重写路径，去掉/api前缀
             }
