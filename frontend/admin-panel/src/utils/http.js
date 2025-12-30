@@ -1,6 +1,7 @@
 import axios from 'axios'
 import {userLoginUserStore} from "@/store/userStore.js";
 import router from "@/router/index.js";
+import {ElMessage} from "element-plus";
 
 const service = axios.create({
     baseURL: '/api',
@@ -26,6 +27,7 @@ service.interceptors.response.use(
         if (res.data.code === 40100) {
             const loginUserStore = userLoginUserStore();
             loginUserStore.logout(); // 清理本地缓存，防止死循环判断
+            ElMessage.error("未登录")
             // 如果不是在登录页，才跳转到登录页
             if (window.location.pathname !== '/login') {
                 router.push('/login');

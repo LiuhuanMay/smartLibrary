@@ -1,61 +1,91 @@
 <template>
-    <div>
-        <el-menu :default-active="$route.path" class="el-menu-vertical-demo" :collapse="isCollapse"
-                 :unique-opened="false" :router="true">
+    <div class="aside-menu">
+        <div class="logo-box">
+            <img src="https://img.icons8.com/clouds/100/book.png" class="logo-img" />
+            <span v-if="!isCollapse" class="logo-text">智慧图书</span>
+        </div>
+
+        <el-menu
+            :default-active="$route.path"
+            :collapse="isCollapse"
+            router
+            unique-opened
+            class="custom-menu"
+        >
             <el-menu-item index="/visualization">
                 <el-icon><HomeFilled /></el-icon>
-                <span>首页</span>
+                <template #title>首页看板</template>
             </el-menu-item>
 
             <el-menu-item index="/user">
                 <el-icon><User /></el-icon>
-                <span>用户管理</span>
+                <template #title>用户管理</template>
             </el-menu-item>
 
             <el-menu-item index="/announcement">
                 <el-icon><Notification /></el-icon>
-                <span>公告管理</span>
+                <template #title>公告管理</template>
             </el-menu-item>
 
             <el-menu-item index="/book">
                 <el-icon><Notebook /></el-icon>
-                <span>图书管理</span>
+                <template #title>图书管理</template>
             </el-menu-item>
 
             <el-menu-item index="/borrow">
                 <el-icon><Collection /></el-icon>
-                <span>借阅管理</span>
+                <template #title>借阅管理</template>
             </el-menu-item>
 
             <el-menu-item index="/system">
                 <el-icon><Setting /></el-icon>
-                <span>系统管理</span>
+                <template #title>系统管理</template>
             </el-menu-item>
         </el-menu>
     </div>
 </template>
 
 <script setup>
-// 记得在你的项目中按需引入这些图标
-import {
-    HomeFilled,
-    User,
-    Notification,
-    Notebook,
-    Collection,
-    Setting
-} from '@element-plus/icons-vue'
-
+import { HomeFilled, User, Notification, Notebook, Collection, Setting } from '@element-plus/icons-vue'
 defineProps(['isCollapse'])
 </script>
 
 <style scoped>
-.el-menu-vertical-demo:not(.el-menu--collapse) {
-    width: 200px;
-    min-height: 100vh;
+.aside-menu {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
-/* 建议加上这个，防止折叠时文字闪烁 */
-.el-menu {
+
+.logo-box {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.logo-img {
+    width: 40px;
+    height: 40px;
+}
+
+.logo-text {
+    margin-left: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #409EFF;
+}
+
+.custom-menu {
     border-right: none;
+    flex: 1;
+}
+
+/* 侧边栏折叠与展开的宽度转换 */
+.custom-menu:not(.el-menu--collapse) {
+    width: 200px;
 }
 </style>

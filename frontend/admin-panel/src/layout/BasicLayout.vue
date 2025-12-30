@@ -1,16 +1,14 @@
 <template>
-    <div class="layout">
-        <div>
-            <Aside class="menu" :isCollapse='isCollapse'></Aside>
-        </div>
-        <div>
-            <Content class="content" :class="{ isActive: isCollapse }" @changeCollapse='changeCollapse'
-                     :isCollapse='isCollapse'>
-            </Content>
+    <div class="layout-container">
+        <Aside class="aside-wrapper" :isCollapse="isCollapse" />
+
+        <div class="main-wrapper">
+            <Content
+                @changeCollapse="changeCollapse"
+                :isCollapse="isCollapse"
+            />
         </div>
     </div>
-
-
 </template>
 
 <script setup>
@@ -18,28 +16,33 @@ import Aside from '@/layout/Aside.vue';
 import Content from '@/layout/Content.vue';
 import { ref } from 'vue';
 
-let isCollapse = ref(false)
-const changeCollapse = (() => {
+const isCollapse = ref(false)
+const changeCollapse = () => {
     isCollapse.value = !isCollapse.value
-
-})
+}
 </script>
 
-<style scoped lang='less'>
-.layout {
-  .menu {
-    position: fixed;
-    top: 0;
-    bottom: 0;
-  }
+<style scoped lang="less">
+.layout-container {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
 
-  .content {
-    margin-left: 200px;
-    transition: all 0.3s;
-  }
+    .aside-wrapper {
+        background-color: #fff;
+        border-right: 1px solid #f0f0f0;
+        transition: width 0.3s;
+        height: 100%;
+    }
 
-  .isActive {
-    margin-left: 64px;
-  }
+    .main-wrapper {
+        flex: 1; // 自动填充剩余宽度
+        display: flex;
+        flex-direction: column;
+        overflow-x: hidden;
+        overflow-y: auto;
+        background-color: #f5f7fa;
+    }
 }
 </style>
