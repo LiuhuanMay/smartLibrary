@@ -16,6 +16,7 @@ import Aside from '@/layout/Aside.vue';
 import Content from '@/layout/Content.vue';
 import { ref } from 'vue';
 
+
 const isCollapse = ref(false)
 const changeCollapse = () => {
     isCollapse.value = !isCollapse.value
