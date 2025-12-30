@@ -7,10 +7,12 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.uoh.common.ErrorCode;
 import com.uoh.exception.BusinessException;
 import com.uoh.exception.ThrowUtils;
+import com.uoh.manager.EmailManager;
 import com.uoh.mapper.BookBorrowMapper;
 import com.uoh.model.dto.bookBorrow.BookBorrowAddRequest;
 import com.uoh.model.dto.bookBorrow.BookBorrowQueryRequest;
 import com.uoh.model.dto.bookBorrow.BookReturnRequest;
+import com.uoh.model.dto.bookBorrow.ReviewBookBorrowRequest;
 import com.uoh.model.entity.Book;
 import com.uoh.model.entity.BookBorrow;
 import com.uoh.model.entity.User;
@@ -20,6 +22,7 @@ import com.uoh.service.BookService;
 import com.uoh.service.UserService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,6 +47,10 @@ public class BookBorrowServiceImpl extends ServiceImpl<BookBorrowMapper, BookBor
 
     @Resource
     private UserService userService;
+
+
+    @Resource
+    private EmailManager emailManager;
 
 
 
@@ -202,12 +209,35 @@ public class BookBorrowServiceImpl extends ServiceImpl<BookBorrowMapper, BookBor
         }
         bookBorrow.setStatus(2);
         bookBorrow.setReviewStatus(0);
+        bookBorrow.setReturnTime(new Date());
         //删除借阅记录
         this.updateById(bookBorrow);
         //更新可用库存
         book.setAvailableStock(book.getAvailableStock()+1);
         book.setBorrowedCount(book.getBorrowedCount()-1);
         bookService.updateById(book);
+    }
+
+    @Override
+    public void ReviewBookBorrow(ReviewBookBorrowRequest reviewBookBorrowRequest) {
+        Long bookBorrowId = reviewBookBorrowRequest.getBookBorrowId();
+        Integer reviewStatus = reviewBookBorrowRequest.getReviewStatus();
+        BookBorrow bookBorrow = this.getById(bookBorrowId);
+        if(bookBorrow==null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"没有该借阅记录");
+        }
+        Long userId = bookBorrow.getUserId();
+        User user = userService.getById(userId);
+        if(user==null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"未找到该用户");
+        }
+        String email = user.getEmail();
+        bookBorrow.setReviewStatus(reviewStatus);
+        boolean b = this.updateById(bookBorrow);
+        if(!b){
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR);
+        }
+        emailManager.sendBookBorrowReviewSimpleNotice(email);
     }
 
 }

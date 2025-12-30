@@ -60,4 +60,23 @@ public class EmailManager {
         message.setText("您的验证码是：" + code + "，5分钟内有效");
         mailSender.send(message);
     }
+
+    public void sendBookBorrowReviewSimpleNotice(String toEmail) {
+        // 1. 构建简单邮件对象
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(senderEmail); // 发件人（与原有配置一致）
+        message.setTo(toEmail); // 收件人用户邮箱
+        message.setSubject("图书借阅申请审核通知"); // 邮件主题
+        message.setText("你的请求已经审核 请及时查看"); // 极简固定正文内容
+
+        // 2. 发送邮件并记录日志
+        try {
+            mailSender.send(message);
+            log.info("极简版图书借阅审核通知邮件发送成功，收件人：{}", toEmail);
+        } catch (Exception e) {
+            log.error("极简版图书借阅审核通知邮件发送失败，收件人：{}", toEmail, e);
+            // 可选：抛出业务异常（根据你的业务需求决定是否添加）
+            // throw new BusinessException(ErrorCode.SYSTEM_ERROR, "借阅审核通知邮件发送失败");
+        }
+    }
 }

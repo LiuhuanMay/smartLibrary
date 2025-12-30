@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.uoh.model.dto.bookBorrow.BookBorrowAddRequest;
 import com.uoh.model.dto.bookBorrow.BookBorrowQueryRequest;
 import com.uoh.model.dto.bookBorrow.BookReturnRequest;
+import com.uoh.model.dto.bookBorrow.ReviewBookBorrowRequest;
 import com.uoh.model.entity.BookBorrow;
 import com.uoh.model.vo.BookBorrowVO;
 
@@ -64,4 +65,11 @@ public interface BookBorrowService extends IService<BookBorrow> {
      * @param bookReturnRequest
      */
     void bookReturn(BookReturnRequest bookReturnRequest);
+
+
+    /**
+     * 管理员审核
+     * @param reviewBookBorrowRequest
+     */
+    void ReviewBookBorrow(ReviewBookBorrowRequest reviewBookBorrowRequest);
 }

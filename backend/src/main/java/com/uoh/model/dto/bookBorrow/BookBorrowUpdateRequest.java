@@ -47,7 +47,6 @@ public class BookBorrowUpdateRequest implements Serializable {
      */
     private Integer status;
 
-
     /**
      *
      * 管理员审核状态

@@ -6,10 +6,7 @@ import com.uoh.common.ErrorCode;
 import com.uoh.common.ResultUtils;
 import com.uoh.exception.BusinessException;
 import com.uoh.exception.ThrowUtils;
-import com.uoh.model.dto.bookBorrow.BookBorrowAddRequest;
-import com.uoh.model.dto.bookBorrow.BookBorrowQueryRequest;
-import com.uoh.model.dto.bookBorrow.BookBorrowUpdateRequest;
-import com.uoh.model.dto.bookBorrow.BookReturnRequest;
+import com.uoh.model.dto.bookBorrow.*;
 import com.uoh.model.entity.BookBorrow;
 import com.uoh.model.entity.User;
 import com.uoh.model.vo.BookBorrowVO;
@@ -155,5 +152,19 @@ public class BookBorrowController {
     public BaseResponse<String> bookReturn(@RequestBody BookReturnRequest bookReturnRequest){
         bookBorrowService.bookReturn(bookReturnRequest);
         return ResultUtils.success("图书归还成功");
+    }
+
+
+    /**
+     * 审核图书
+     *
+     * @param reviewBookBorrowRequest
+     * @return
+     */
+    @PostMapping("/reviewBookBorrow")
+    @Operation(summary = "管理员审核")
+    public BaseResponse<String> ReviewBookBorrow(@RequestBody ReviewBookBorrowRequest reviewBookBorrowRequest){
+        bookBorrowService.ReviewBookBorrow(reviewBookBorrowRequest);
+        return ResultUtils.success("审核成功");
     }
 }
