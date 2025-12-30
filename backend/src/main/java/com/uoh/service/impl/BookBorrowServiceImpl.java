@@ -200,8 +200,10 @@ public class BookBorrowServiceImpl extends ServiceImpl<BookBorrowMapper, BookBor
         if(book==null){
             throw new BusinessException(ErrorCode.PARAMS_ERROR,"没有该图书");
         }
+        bookBorrow.setStatus(2);
+        bookBorrow.setReviewStatus(0);
         //删除借阅记录
-        this.removeById(bookBorrowId);
+        this.updateById(bookBorrow);
         //更新可用库存
         book.setAvailableStock(book.getAvailableStock()+1);
         book.setBorrowedCount(book.getBorrowedCount()-1);

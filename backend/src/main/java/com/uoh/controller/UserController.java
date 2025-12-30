@@ -89,6 +89,7 @@ public class UserController {
     @PostMapping("/update")
     @Operation(summary = "更新用户")
     public BaseResponse<Boolean> updateUser(@RequestBody UserUpdateRequest userUpdateRequest) {
+        System.out.println(userUpdateRequest);
         if (userUpdateRequest == null || userUpdateRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }

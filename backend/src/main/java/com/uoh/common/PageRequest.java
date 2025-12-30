@@ -5,7 +5,6 @@ import lombok.Data;
 
 /**
  * 分页请求
- * @author <a href="https://github.com/liuhuan66666666">程序员刘欢</a>
  */
 @Data
 public class PageRequest {

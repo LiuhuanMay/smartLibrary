@@ -50,7 +50,7 @@ public class BookBorrowVO implements Serializable {
     private Date returnTime;
 
     /**
-     * 借阅状态：0借阅中 1已归还 2逾期
+     * 借阅状态：0未审核 1 借阅中 2已归还 3逾期
      */
     private Integer status;
 

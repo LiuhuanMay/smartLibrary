@@ -48,7 +48,6 @@ import { userLoginUserStore } from "@/store/userStore.js";
 import { useRouter } from 'vue-router';
 import { updateUser } from "@/api/user.js";
 import 'vant/es/toast/style';
-
 const userStore = userLoginUserStore();
 const router = useRouter();
 

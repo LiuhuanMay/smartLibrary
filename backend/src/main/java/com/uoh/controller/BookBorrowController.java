@@ -107,7 +107,8 @@ public class BookBorrowController {
      */
     @PostMapping("/myList/page/vo")
     @Operation(summary = "分页获取当前用户的借阅列表")
-    public BaseResponse<Page<BookBorrowVO>> myListBookBorrowVOByPage(@RequestBody BookBorrowQueryRequest bookBorrowQueryRequest) {Long userId = UserHolder.getUserId();
+    public BaseResponse<Page<BookBorrowVO>> myListBookBorrowVOByPage(@RequestBody BookBorrowQueryRequest bookBorrowQueryRequest) {
+        Long userId = UserHolder.getUserId();
         bookBorrowQueryRequest.setUserId(userId);
         long current = bookBorrowQueryRequest.getCurrentPage();
         long size = bookBorrowQueryRequest.getPageSize();
