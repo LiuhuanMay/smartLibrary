@@ -47,6 +47,14 @@ public class AnnouncementServiceImpl extends ServiceImpl<AnnouncementMapper, Ann
     public QueryWrapper<Announcement> getQueryWrapper(AnnouncementQueryRequest announcementQueryRequest) {
         QueryWrapper<Announcement> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("status",1);
+        String title = announcementQueryRequest.getTitle();
+        Integer type = announcementQueryRequest.getType();
+        if(title!=null){
+            queryWrapper.like("title",title);
+        }
+        if(type!=null){
+            queryWrapper.eq("type",type);
+        }
         if (announcementQueryRequest == null) {
             return queryWrapper;
         }

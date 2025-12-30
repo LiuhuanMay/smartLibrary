@@ -15,5 +15,9 @@ import java.io.Serializable;
 public class AnnouncementQueryRequest extends PageRequest implements Serializable {
 
 
+    private String title;
+
+    private Integer type;
+
     private static final long serialVersionUID = 1L;
 }

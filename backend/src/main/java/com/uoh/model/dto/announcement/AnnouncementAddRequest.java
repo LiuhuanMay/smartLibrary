@@ -42,10 +42,6 @@ public class AnnouncementAddRequest implements Serializable {
      */
     private Integer viewCount;
 
-    /**
-     * 发布人ID
-     */
-    private Long publisherId;
 
     private static final long serialVersionUID = 1L;
 }
