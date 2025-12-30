@@ -12,6 +12,7 @@ import com.uoh.model.entity.User;
 import com.uoh.model.vo.UserVO;
 import com.uoh.service.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -49,6 +50,21 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (userQueryRequest == null) {
             return queryWrapper;
         }
+
+        String nickname = userQueryRequest.getNickname();
+        String phone = userQueryRequest.getPhone();
+        Integer role = userQueryRequest.getRole();
+        Integer status = userQueryRequest.getStatus();
+
+        // 模糊查询
+        queryWrapper.like(StringUtils.isNotBlank(nickname), "nickname", nickname);
+        queryWrapper.like(StringUtils.isNotBlank(phone), "phone", phone);
+
+        // 精确匹配
+        queryWrapper.eq(role != null, "role", role);
+        queryWrapper.eq(status != null, "status", status);
+
+
         return queryWrapper;
     }
 
