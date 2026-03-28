@@ -1,7 +1,7 @@
 package com.uoh.Interceptor;
 
 import com.uoh.common.ErrorCode;
-import com.uoh.exception.BusinessException;
+import com.uoh.common.exception.BusinessException;
 import com.uoh.utils.JWTUtils;
 import com.uoh.utils.UserHolder;
 import jakarta.annotation.Resource;

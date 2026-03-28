@@ -1,4 +1,4 @@
-package com.uoh.exception;
+package com.uoh.common.exception;
 
 
 import com.uoh.common.ErrorCode;

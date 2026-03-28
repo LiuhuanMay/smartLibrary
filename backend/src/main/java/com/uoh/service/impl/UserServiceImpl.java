@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.uoh.common.ErrorCode;
-import com.uoh.exception.ThrowUtils;
+import com.uoh.common.exception.ThrowUtils;
 import com.uoh.mapper.UserMapper;
 import com.uoh.model.dto.user.UserQueryRequest;
 import com.uoh.model.entity.User;

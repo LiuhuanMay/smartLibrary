@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.uoh.common.BaseResponse;
 import com.uoh.common.ErrorCode;
 import com.uoh.common.ResultUtils;
-import com.uoh.manager.EmailManager;
+import com.uoh.service.impl.EmailServiceImpl;
 import com.uoh.model.dto.user.ResetPasswordRequest;
 import com.uoh.model.dto.user.UserLoginRequest;
 import com.uoh.model.dto.user.UserRegisterRequest;
@@ -30,7 +30,7 @@ public class AuthController {
     private JWTUtils jwtUtils;
 
     @Resource
-    private EmailManager emailManager;
+    private EmailServiceImpl emailServiceImpl;
 
     @PostMapping("/login")
     @Operation(summary = "用户登录")
@@ -59,7 +59,7 @@ public class AuthController {
     @GetMapping("/sendCode")
     @Operation(summary = "注册发送验证码")
     public BaseResponse<String> sendRegisterCode(@RequestParam ("email") String email) {
-        emailManager.sendCode(email, EmailManager.CodeType.REGISTER);
+        emailServiceImpl.sendCode(email, EmailServiceImpl.CodeType.REGISTER);
         return ResultUtils.success("验证码已发送");
     }
 
@@ -70,7 +70,7 @@ public class AuthController {
         if (user == null) {
             return ResultUtils.error(ErrorCode.NOT_FOUND_ERROR ,"邮箱未注册");
         }
-        emailManager.sendCode(email, EmailManager.CodeType.RESET);
+        emailServiceImpl.sendCode(email, EmailServiceImpl.CodeType.RESET);
         return ResultUtils.success("验证码已发送");
     }
 
@@ -81,14 +81,14 @@ public class AuthController {
                 || request.getEmail() == null || request.getCode() == null) {
             return ResultUtils.error(ErrorCode.PARAMS_ERROR, "手机号、密码、邮箱或验证码不能为空");
         }
-        if (!emailManager.checkCode(request.getEmail(), request.getCode(), EmailManager.CodeType.REGISTER)) {
+        if (!emailServiceImpl.checkCode(request.getEmail(), request.getCode(), EmailServiceImpl.CodeType.REGISTER)) {
             return ResultUtils.error(ErrorCode.PARAMS_ERROR, "验证码错误或已过期");
         }
 
         User user = new User();
         BeanUtils.copyProperties(request,user);
         userService.save(user);
-        emailManager.deleteCode(request.getEmail(), EmailManager.CodeType.REGISTER);
+        emailServiceImpl.deleteCode(request.getEmail(), EmailServiceImpl.CodeType.REGISTER);
         return ResultUtils.success("注册成功");
     }
 
@@ -99,7 +99,7 @@ public class AuthController {
         if (user == null) {
             return ResultUtils.error(ErrorCode.NOT_FOUND_ERROR, "用户不存在");
         }
-        if (!emailManager.checkCode(request.getEmail(), request.getCode(), EmailManager.CodeType.RESET)) {
+        if (!emailServiceImpl.checkCode(request.getEmail(), request.getCode(), EmailServiceImpl.CodeType.RESET)) {
             return ResultUtils.error(ErrorCode.PARAMS_ERROR, "验证码错误或已过期");
         }
         if(!request.getPassword().equals(request.getRepeatPassword())){
@@ -107,7 +107,7 @@ public class AuthController {
         }
         user.setPassword(request.getPassword());
         userService.updateById(user);
-        emailManager.deleteCode(request.getEmail(), EmailManager.CodeType.RESET);
+        emailServiceImpl.deleteCode(request.getEmail(), EmailServiceImpl.CodeType.RESET);
 
         return ResultUtils.success("密码重置成功");
     }

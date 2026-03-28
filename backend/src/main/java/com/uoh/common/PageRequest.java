@@ -1,6 +1,6 @@
 package com.uoh.common;
 
-import com.uoh.constant.CommonConstant;
+import com.uoh.common.constant.CommonConstant;
 import lombok.Data;
 
 /**

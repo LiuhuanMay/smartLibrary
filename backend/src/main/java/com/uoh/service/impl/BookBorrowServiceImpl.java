@@ -5,9 +5,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.uoh.common.ErrorCode;
-import com.uoh.exception.BusinessException;
-import com.uoh.exception.ThrowUtils;
-import com.uoh.manager.EmailManager;
+import com.uoh.common.exception.BusinessException;
+import com.uoh.common.exception.ThrowUtils;
 import com.uoh.mapper.BookBorrowMapper;
 import com.uoh.model.dto.bookBorrow.BookBorrowAddRequest;
 import com.uoh.model.dto.bookBorrow.BookBorrowQueryRequest;
@@ -22,7 +21,6 @@ import com.uoh.service.BookService;
 import com.uoh.service.UserService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,7 +48,7 @@ public class BookBorrowServiceImpl extends ServiceImpl<BookBorrowMapper, BookBor
 
 
     @Resource
-    private EmailManager emailManager;
+    private EmailServiceImpl emailServiceImpl;
 
 
 
@@ -237,7 +235,7 @@ public class BookBorrowServiceImpl extends ServiceImpl<BookBorrowMapper, BookBor
         if(!b){
             throw new BusinessException(ErrorCode.SYSTEM_ERROR);
         }
-        emailManager.sendBookBorrowReviewSimpleNotice(email);
+        emailServiceImpl.sendBookBorrowReviewSimpleNotice(email);
     }
 
 }

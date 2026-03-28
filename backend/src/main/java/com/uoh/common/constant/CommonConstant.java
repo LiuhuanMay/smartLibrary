@@ -1,4 +1,4 @@
-package com.uoh.constant;
+package com.uoh.common.constant;
 
 
 public interface CommonConstant {

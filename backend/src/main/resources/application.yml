@@ -37,14 +37,14 @@ spring:
             enable: true
   data:
     redis:
-      host: 127.0.0.1:3306
+      host: 127.0.0.1
       database: 0
       timeout: 5000ms
-      password: 123456
-      port: 6490
+
   ai:
     dashscope:
-      api-key: sk-4b39f135f3ea46628ceed60412f34028
+      api-key: sk-060ac57fa1ca4045a511bf9a646d8a2d
+
 #mybatis-plus:
 #  configuration:
 #    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

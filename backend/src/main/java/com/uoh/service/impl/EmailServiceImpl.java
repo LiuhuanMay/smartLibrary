@@ -1,4 +1,4 @@
-package com.uoh.manager;
+package com.uoh.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 @Component
 @Slf4j
-public class EmailManager {
+public class EmailServiceImpl {
 
     public enum CodeType { REGISTER, RESET }
 
@@ -24,7 +24,7 @@ public class EmailManager {
     private static final String REGISTER_PREFIX = "email:register:";
     private static final String RESET_PREFIX = "email:reset:";
 
-    public EmailManager(StringRedisTemplate redisTemplate, JavaMailSender mailSender) {
+    public EmailServiceImpl(StringRedisTemplate redisTemplate, JavaMailSender mailSender) {
         this.redisTemplate = redisTemplate;
         this.mailSender = mailSender;
     }
