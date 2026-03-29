@@ -20,7 +20,7 @@ knife4j:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/library
+    url: jdbc:mysql://111.229.45.198:3306/library
     username: root
     password: 123456
   mail:
@@ -37,7 +37,7 @@ spring:
             enable: true
   data:
     redis:
-      host: 127.0.0.1
+      host: 111.229.45.198
       database: 0
       timeout: 5000ms
 
