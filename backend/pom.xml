@@ -16,6 +16,8 @@
         <knife.version>4.5.0</knife.version>
         <hutool.version>5.8.42</hutool.version>
         <mybatis-plus.version>3.5.15</mybatis-plus.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
 
     <dependencies>
