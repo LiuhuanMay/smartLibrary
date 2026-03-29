@@ -47,6 +47,7 @@
             <van-cell-group inset>
                 <van-cell title="个人资料" is-link icon="user-o" to="/profile" />
                 <van-cell title="我的借阅" is-link icon="orders-o" to="/my-borrow" />
+                <van-cell title="图书推荐" value="去推荐" is-link icon="star-o" to="/recommend" />
             </van-cell-group>
 
             <van-cell-group inset style="margin-top: 12px;">

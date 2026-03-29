@@ -26,11 +26,12 @@ const tabRouteMap = [
     { tabName: "notice", path: "/notice" }, // 通知公告
     { tabName: "assistant", path: "/assistant" }, // 智能助手（原绝对路径）
     { tabName: "user", path: "/my" }, // 我的
+    { tabName: "user", path: "/recommend" }, // 我的-推荐
 ];
 
 // 初始化active：根据当前路由匹配对应的tabName
 const active = ref(
-    tabRouteMap.find(item => item.path === route.path)?.tabName || "setting"
+    tabRouteMap.find(item => item.path === route.path)?.tabName || "home"
 );
 
 // 监听路由变化，更新active

@@ -49,6 +49,11 @@ export const routes = [
                 component: () => import('@/page/My.vue')
             },
             {
+                path: "/recommend",
+                name: "智能推荐",
+                component: () => import('@/page/Recommend.vue')
+            },
+            {
                 path: "/notice",
                 name: "通知通告",
                 component: () => import('@/page/Notice.vue')

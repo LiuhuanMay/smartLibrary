@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C \"/f/WorkSpace/smartLibrary/frontend/app\" status --short)",
+      "Bash(git status:*)"
+    ]
+  }
+}

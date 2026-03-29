@@ -143,13 +143,6 @@
             />
         </van-popup>
 
-        <!-- 底部 Tabbar -->
-        <van-tabbar fixed>
-            <van-tabbar-item name="home" icon="home-o">图书精选</van-tabbar-item>
-            <van-tabbar-item name="search" icon="search">通知公告</van-tabbar-item>
-            <van-tabbar-item name="friends" icon="friends-o">智能助手</van-tabbar-item>
-            <van-tabbar-item name="setting" icon="setting-o">我的</van-tabbar-item>
-        </van-tabbar>
     </div>
 </template>
 
@@ -340,7 +333,7 @@ fetchList()
 }
 
 .book-list {
-    padding: 12px 14px 18px;
+    padding: 0 14px 18px;
 }
 
 .book-item {
@@ -403,24 +396,6 @@ fetchList()
     z-index: 99;
     box-shadow: 0 -4px 16px rgba(74, 144, 226, 0.08);
     border-top: 1px solid #e3edff;
-}
-
-:deep(.van-tabbar) {
-    background: rgba(255, 255, 255, 0.98);
-    box-shadow: 0 -4px 16px rgba(74, 144, 226, 0.08);
-    border-top: 1px solid #e3edff;
-}
-
-:deep(.van-tabbar-item__icon) {
-    font-size: 18px;
-}
-
-:deep(.van-tabbar-item__text) {
-    font-size: 11px;
-}
-
-:deep(.van-tabbar-item--active) {
-    color: #4a90e2;
 }
 
 .filter-popup {

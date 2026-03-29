@@ -11,9 +11,9 @@ export const listBookVOByPage= (data)=>{
 }
 
 /**
- * 
- * @param {*} data 
- * @returns 
+ *
+ * @param {*} data
+ * @returns
  */
 export const addBookBorrow = (data)=>{
     return http.post("/bookBorrow/add",data)
@@ -37,4 +37,13 @@ export const myListBookBorrowVOByPage=(data)=>{
 
 export const bookReturn=(data)=>{
     return http.post("/bookBorrow/returnBook",data)
+}
+
+/**
+ * 智能荐书
+ * @param data
+ * @returns {Promise<axios.AxiosResponse<any>>}
+ */
+export const getBookRecommendList = (data) => {
+    return http.post("/book/recommend", data)
 }
