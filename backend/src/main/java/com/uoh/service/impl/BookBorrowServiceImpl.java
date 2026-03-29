@@ -224,6 +224,9 @@ public class BookBorrowServiceImpl extends ServiceImpl<BookBorrowMapper, BookBor
         if(bookBorrow==null){
             throw new BusinessException(ErrorCode.PARAMS_ERROR,"没有该借阅记录");
         }
+        if(bookBorrow.getStatus()==0){
+            bookBorrow.setStatus(1);
+        }
         Long userId = bookBorrow.getUserId();
         User user = userService.getById(userId);
         if(user==null){

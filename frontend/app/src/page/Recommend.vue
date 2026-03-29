@@ -62,7 +62,6 @@
                     <div class="result-title">推荐结果</div>
                     <div class="result-subtitle">共 {{ recommendList.length }} 本</div>
                 </div>
-                <van-tag plain type="primary">Mock API</van-tag>
             </div>
 
             <van-empty v-if="hasRecommended && recommendList.length === 0" description="暂未匹配到合适图书，试试换个方向" />
@@ -106,7 +105,7 @@
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { showToast } from 'vant'
-import { getBookRecommendationsByModel } from '@/api/ai.js'
+import { getBookRecommendList } from '@/api/book.js'
 import { useBookStore } from '@/store/bookStore.js'
 
 const router = useRouter()
@@ -126,10 +125,6 @@ const recommendForm = reactive({
     goal: ''
 })
 
-const wait = (ms) => new Promise((resolve) => {
-    setTimeout(resolve, ms)
-})
-
 const toggleQuickTag = (tag) => {
     if (selectedTags.value.includes(tag)) {
         selectedTags.value = selectedTags.value.filter((item) => item !== tag)
@@ -139,17 +134,23 @@ const toggleQuickTag = (tag) => {
     selectedTags.value = [...selectedTags.value, tag]
 }
 
+const normalizeRecommendBook = (book) => ({
+    ...book,
+    tags: Array.isArray(book.tags) ? book.tags : [],
+    recommendReason: book.recommendReason || '该图书与您的输入方向较为匹配，适合作为本次推荐候选。'
+})
+
 const fetchRecommendList = async () => {
     recommendLoading.value = true
 
     try {
-        const res = await getBookRecommendationsByModel({
+        const res = await getBookRecommendList({
             ...recommendForm,
             tags: selectedTags.value
         })
 
         if (res.code === 0) {
-            recommendList.value = Array.isArray(res.data) ? res.data : []
+            recommendList.value = Array.isArray(res.data) ? res.data.map(normalizeRecommendBook) : []
             hasRecommended.value = true
             return
         }
@@ -167,10 +168,7 @@ const fetchRecommendList = async () => {
 }
 
 const handleRecommend = async () => {
-    recommendLoading.value = true
     hasRecommended.value = false
-
-    await wait(5000)
     await fetchRecommendList()
 
     if (recommendList.value.length === 0) {
